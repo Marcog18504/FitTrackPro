@@ -3,6 +3,11 @@
 # dependencies
 node_modules/
 
+# local assistant files
+.claude/
+AGENTS.md
+CLAUDE.md
+
 # Expo
 .expo/
 dist/
@@ -35,6 +40,9 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# generated archives
+FitTrackPro-progetto.zip
 
 # generated native folders
 /ios
