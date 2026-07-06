@@ -74,7 +74,7 @@ export default function App() {
   useEffect(() => {
     loadFitnessData()
       .then(setData)
-      .catch(() => Alert.alert("Errore", "Non riesco a caricare i dati locali."))
+      .catch(() => showMessage("Errore", "Non riesco a caricare i dati locali."))
       .finally(() => setLoading(false));
   }, []);
 
@@ -111,6 +111,15 @@ export default function App() {
     await saveFitnessData(nextData);
   }
 
+  function showMessage(title: string, message: string) {
+    if (Platform.OS === "web") {
+      globalThis.alert(`${title}\n\n${message}`);
+      return;
+    }
+
+    Alert.alert(title, message);
+  }
+
   function confirmDestructive(title: string, message: string, confirmText: string, onConfirm: () => void | Promise<void>) {
     if (Platform.OS === "web") {
       if (globalThis.confirm(`${title}\n\n${message}`)) {
@@ -134,7 +143,7 @@ export default function App() {
   async function saveEntity(entity: Entity, item: unknown) {
     const validation = validateEntity(entity, item, data);
     if (!validation.ok) {
-      Alert.alert("Dato non valido", validation.message);
+      showMessage("Dato non valido", validation.message);
       return false;
     }
 
