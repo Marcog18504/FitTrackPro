@@ -65,9 +65,11 @@ function normalizeFitnessData(data: FitnessData): FitnessData {
     exercises: data.exercises.map((exercise) => {
       const legacy = exercise as typeof exercise & { recommended?: string };
       const extracted = extractNumbers(legacy.recommended ?? "");
+      const primaryMuscle = normalizeMuscleGroup(exercise.primaryMuscle);
       return {
         ...exercise,
-        primaryMuscle: normalizeMuscleGroup(exercise.primaryMuscle),
+        primaryMuscle,
+        secondaryMuscles: normalizeSecondaryMuscles(exercise.secondaryMuscles, primaryMuscle),
         recommendedSets: safeNumber(exercise.recommendedSets, extracted[0] ?? 3),
         recommendedReps: safeNumber(exercise.recommendedReps, extracted[1] ?? 10),
         estimatedDurationMinutes: safeNumber(exercise.estimatedDurationMinutes, 5),
@@ -122,5 +124,16 @@ function normalizeMuscleGroup(value: unknown) {
   const normalized = cleaned.toLocaleLowerCase("it-IT");
 
   if (normalized === "core" || normalized === "addominali") return "Addome";
+  if (["glutei", "quadricipiti", "femorali", "polpacci"].includes(normalized)) return "Gambe";
+  if (["bicipiti", "tricipiti", "avambracci"].includes(normalized)) return "Braccia";
   return muscleGroups.find((group) => group.toLocaleLowerCase("it-IT") === normalized) ?? "Gambe";
+}
+
+function normalizeSecondaryMuscles(value: unknown, primaryMuscle: string) {
+  const groups = String(value ?? "")
+    .split(",")
+    .map((entry) => normalizeMuscleGroup(entry))
+    .filter((group) => group !== primaryMuscle && muscleGroups.includes(group));
+
+  return Array.from(new Set(groups)).join(", ");
 }

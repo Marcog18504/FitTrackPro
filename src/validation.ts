@@ -113,7 +113,20 @@ function normalizeMuscleGroup(value: unknown) {
   const normalized = normalize(cleaned);
 
   if (normalized === "core" || normalized === "addominali") return "Addome";
+  if (["glutei", "quadricipiti", "femorali", "polpacci"].includes(normalized)) return "Gambe";
+  if (["bicipiti", "tricipiti", "avambracci"].includes(normalized)) return "Braccia";
   return muscleGroups.find((group) => normalize(group) === normalized) ?? cleaned;
+}
+
+function splitSecondaryMuscles(value: string) {
+  return value
+    .split(",")
+    .map((entry) => cleanText(entry))
+    .filter(Boolean);
+}
+
+function normalizeSecondaryMuscles(value: unknown) {
+  return Array.from(new Set(splitSecondaryMuscles(cleanText(value)).map(normalizeMuscleGroup))).join(", ");
 }
 
 function validateExercise(exercise: Exercise, data: FitnessData): ValidationResult {
@@ -121,7 +134,7 @@ function validateExercise(exercise: Exercise, data: FitnessData): ValidationResu
     ...exercise,
     name: cleanText(exercise.name),
     primaryMuscle: normalizeMuscleGroup(exercise.primaryMuscle),
-    secondaryMuscles: cleanText(exercise.secondaryMuscles),
+    secondaryMuscles: normalizeSecondaryMuscles(exercise.secondaryMuscles),
     description: cleanLongText(exercise.description),
     equipment: cleanText(exercise.equipment),
     recommendedSets: Number(exercise.recommendedSets),
@@ -141,6 +154,12 @@ function validateExercise(exercise: Exercise, data: FitnessData): ValidationResu
   }
   if (!isValidList(cleaned.secondaryMuscles, 120)) {
     return fail("I gruppi secondari possono contenere lettere, numeri, spazi, virgole, apostrofi, trattini e barre.");
+  }
+  if (splitSecondaryMuscles(cleaned.secondaryMuscles).some((group) => !muscleGroups.includes(group))) {
+    return fail("Seleziona i gruppi secondari solo tra quelli disponibili.");
+  }
+  if (splitSecondaryMuscles(cleaned.secondaryMuscles).includes(cleaned.primaryMuscle)) {
+    return fail("Il gruppo principale non puo essere inserito anche tra i gruppi secondari.");
   }
   if (!isValidLongText(cleaned.description, 500, true)) {
     return fail("Inserisci una descrizione valida, lunga al massimo 500 caratteri.");

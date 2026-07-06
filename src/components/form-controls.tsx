@@ -83,6 +83,49 @@ export function PickerChips({ label, value, options, onChange, getLabel }: Picke
   );
 }
 
+type MultiPickerChipsProps = {
+  label: string;
+  value: string;
+  options: string[];
+  onChange: (value: string) => void;
+  helperText?: string;
+};
+
+export function MultiPickerChips({ label, value, options, onChange, helperText }: MultiPickerChipsProps) {
+  const selected = value
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+
+  function toggle(option: string) {
+    const next = selected.includes(option)
+      ? selected.filter((entry) => entry !== option)
+      : [...selected, option];
+    onChange(next.join(", "));
+  }
+
+  return (
+    <View style={styles.field}>
+      <Text style={styles.label}>{label}</Text>
+      <View style={styles.chips}>
+        {options.map((option) => {
+          const active = selected.includes(option);
+          return (
+            <Pressable
+              key={option}
+              style={[styles.chip, active && styles.activeChip]}
+              onPress={() => toggle(option)}
+            >
+              <Text style={[styles.chipText, active && styles.activeChipText]}>{option}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
+      {helperText ? <Text style={styles.helperText}>{helperText}</Text> : null}
+    </View>
+  );
+}
+
 type PlanSelectorProps = {
   plans: WorkoutPlan[];
   selected: string;

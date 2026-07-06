@@ -4,7 +4,7 @@ import { difficulties, goalStatuses, muscleGroups, sessionStatuses } from "../co
 import { styles } from "../styles";
 import { EditingState, Entity, FitnessData, PlanExercise, WorkoutExerciseLoad, WorkoutPlanDay } from "../types";
 import { makeId, toNumber, today } from "../utils";
-import { Field, PickerChips, PlanSelector } from "./form-controls";
+import { Field, MultiPickerChips, PickerChips, PlanSelector } from "./form-controls";
 
 type EditableWorkoutExerciseLoad = Omit<WorkoutExerciseLoad, "loadKg"> & { loadKg: number | string };
 
@@ -132,6 +132,19 @@ export function EditModal({ editing, data, onClose, onSave }: EditModalProps) {
 
   function setField(key: string, value: unknown) {
     setForm((current) => ({ ...current, [key]: value }));
+  }
+
+  function getSecondaryMuscleOptions() {
+    return muscleGroups.filter((group) => group !== form.primaryMuscle);
+  }
+
+  function setPrimaryMuscle(value: string) {
+    const secondaryMuscles = String(form.secondaryMuscles ?? "")
+      .split(",")
+      .map((entry) => entry.trim())
+      .filter((entry) => entry && entry !== value)
+      .join(", ");
+    setForm((current) => ({ ...current, primaryMuscle: value, secondaryMuscles }));
   }
 
   function setWorkoutPlan(planId: string) {
@@ -327,9 +340,15 @@ export function EditModal({ editing, data, onClose, onSave }: EditModalProps) {
                 label="Gruppo muscolare"
                 value={String(form.primaryMuscle)}
                 options={muscleGroups}
-                onChange={(value) => setField("primaryMuscle", value)}
+                onChange={setPrimaryMuscle}
               />
-              <Field label="Gruppi secondari" value={form.secondaryMuscles} onChange={(value) => setField("secondaryMuscles", value)} inputKind="list" />
+              <MultiPickerChips
+                label="Gruppi secondari"
+                value={String(form.secondaryMuscles ?? "")}
+                options={getSecondaryMuscleOptions()}
+                onChange={(value) => setField("secondaryMuscles", value)}
+                helperText="Seleziona uno o piu gruppi dalla lista."
+              />
               <PickerChips label="Difficolta" value={String(form.difficulty)} options={difficulties} onChange={(value) => setField("difficulty", value)} />
               <Field label="Attrezzatura" value={form.equipment} onChange={(value) => setField("equipment", value)} inputKind="shortText" maxLength={80} required />
               <Field
