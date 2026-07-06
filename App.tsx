@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StatusBar } from "expo-status-bar";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
-import { Alert, Pressable, ScrollView, Text, View } from "react-native";
+import { Alert, Platform, Pressable, ScrollView, Text, View } from "react-native";
 import { DetailModal } from "./src/components/detail-modal";
 import { EditModal } from "./src/components/edit-modal";
 import { emptyData } from "./src/constants";
@@ -111,6 +111,26 @@ export default function App() {
     await saveFitnessData(nextData);
   }
 
+  function confirmDestructive(title: string, message: string, confirmText: string, onConfirm: () => void | Promise<void>) {
+    if (Platform.OS === "web") {
+      if (globalThis.confirm(`${title}\n\n${message}`)) {
+        void onConfirm();
+      }
+      return;
+    }
+
+    Alert.alert(title, message, [
+      { text: "Annulla", style: "cancel" },
+      {
+        text: confirmText,
+        style: "destructive",
+        onPress: () => {
+          void onConfirm();
+        },
+      },
+    ]);
+  }
+
   async function saveEntity(entity: Entity, item: unknown) {
     const validation = validateEntity(entity, item, data);
     if (!validation.ok) {
@@ -173,20 +193,13 @@ export default function App() {
   }
 
   function removeEntity(entity: Entity, id: string) {
-    Alert.alert("Elimina", "Confermi l'eliminazione?", [
-      { text: "Annulla", style: "cancel" },
-      {
-        text: "Elimina",
-        style: "destructive",
-        onPress: async () => {
-          if (entity === "exercise") await commit({ ...data, exercises: data.exercises.filter((item) => item.id !== id) });
-          if (entity === "plan") await commit({ ...data, plans: data.plans.filter((item) => item.id !== id) });
-          if (entity === "session") await commit({ ...data, sessions: data.sessions.filter((item) => item.id !== id) });
-          if (entity === "workout") await commit({ ...data, workouts: data.workouts.filter((item) => item.id !== id) });
-          if (entity === "goal") await commit({ ...data, goals: data.goals.filter((item) => item.id !== id) });
-        },
-      },
-    ]);
+    confirmDestructive("Elimina", "Confermi l'eliminazione?", "Elimina", async () => {
+      if (entity === "exercise") await commit({ ...data, exercises: data.exercises.filter((item) => item.id !== id) });
+      if (entity === "plan") await commit({ ...data, plans: data.plans.filter((item) => item.id !== id) });
+      if (entity === "session") await commit({ ...data, sessions: data.sessions.filter((item) => item.id !== id) });
+      if (entity === "workout") await commit({ ...data, workouts: data.workouts.filter((item) => item.id !== id) });
+      if (entity === "goal") await commit({ ...data, goals: data.goals.filter((item) => item.id !== id) });
+    });
   }
 
   async function duplicatePlan(plan: WorkoutPlan) {
@@ -224,14 +237,7 @@ export default function App() {
   }
 
   function confirmReset() {
-    Alert.alert("Reset dati", "Vuoi ripristinare i dati demo?", [
-      { text: "Annulla", style: "cancel" },
-      {
-        text: "Reset",
-        style: "destructive",
-        onPress: async () => setData(await resetFitnessData()),
-      },
-    ]);
+    confirmDestructive("Reset dati", "Vuoi ripristinare i dati demo?", "Reset", async () => setData(await resetFitnessData()));
   }
 
   const appState: AppState = {
