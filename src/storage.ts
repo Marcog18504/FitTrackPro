@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { FitnessData } from "./types";
+import { FitnessData, FitnessGoal, GoalStatus } from "./types";
 import { seedData } from "./seed";
-import { makeId } from "./utils";
+import { makeId, today } from "./utils";
 import { muscleGroups } from "./constants";
 
 const STORAGE_KEY = "fittrackpro:data:v1";
@@ -9,8 +9,9 @@ const STORAGE_KEY = "fittrackpro:data:v1";
 export async function loadFitnessData(): Promise<FitnessData> {
   const raw = await AsyncStorage.getItem(STORAGE_KEY);
   if (!raw) {
-    await saveFitnessData(seedData);
-    return seedData;
+    const normalizedSeed = normalizeFitnessData(seedData);
+    await saveFitnessData(normalizedSeed);
+    return normalizedSeed;
   }
 
   const parsed = JSON.parse(raw) as FitnessData;
@@ -24,8 +25,9 @@ export async function saveFitnessData(data: FitnessData) {
 }
 
 export async function resetFitnessData() {
-  await saveFitnessData(seedData);
-  return seedData;
+  const normalizedSeed = normalizeFitnessData(seedData);
+  await saveFitnessData(normalizedSeed);
+  return normalizedSeed;
 }
 
 function normalizeFitnessData(data: FitnessData): FitnessData {
@@ -107,7 +109,24 @@ function normalizeFitnessData(data: FitnessData): FitnessData {
             : []),
       };
     }),
+    goals: data.goals.map(normalizeGoalStatus),
   };
+}
+
+function normalizeGoalStatus(goal: FitnessGoal): FitnessGoal {
+  if (Number(goal.current) >= Number(goal.target)) {
+    return { ...goal, status: "Raggiunto" as GoalStatus };
+  }
+
+  if (isPastDue(goal.dueDate)) {
+    return { ...goal, status: "Fallito" as GoalStatus };
+  }
+
+  return goal;
+}
+
+function isPastDue(dueDate: string) {
+  return Boolean(dueDate) && dueDate < today();
 }
 
 function safeNumber(value: unknown, fallback: number) {

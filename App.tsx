@@ -184,7 +184,8 @@ export default function App() {
       const exists = data.workouts.some((entry) => entry.id === workout.id);
       const nextWorkouts = exists ? data.workouts.map((entry) => (entry.id === workout.id ? workout : entry)) : [workout, ...data.workouts];
       const nextSessions = markMatchingSessionCompleted(data.sessions, workout);
-      const nextGoals = exists ? data.goals : advanceGoalsAfterWorkout(data.goals, workout);
+      const normalizedGoals = data.goals.map(normalizeGoalStatus);
+      const nextGoals = exists ? normalizedGoals : advanceGoalsAfterWorkout(normalizedGoals, workout);
       await commit({
         ...data,
         workouts: nextWorkouts,
@@ -196,7 +197,7 @@ export default function App() {
 
     if (entity === "goal") {
       const goal = validation.item as FitnessGoal;
-      const normalized = { ...goal, status: goal.current >= goal.target ? ("Raggiunto" as GoalStatus) : goal.status };
+      const normalized = normalizeGoalStatus(goal);
       const exists = data.goals.some((entry) => entry.id === normalized.id);
       await commit({
         ...data,
@@ -291,6 +292,22 @@ export default function App() {
     }
 
     return 0;
+  }
+
+  function normalizeGoalStatus(goal: FitnessGoal): FitnessGoal {
+    if (goal.current >= goal.target) {
+      return { ...goal, status: "Raggiunto" as GoalStatus };
+    }
+
+    if (isPastDue(goal.dueDate)) {
+      return { ...goal, status: "Fallito" as GoalStatus };
+    }
+
+    return goal;
+  }
+
+  function isPastDue(dueDate: string) {
+    return Boolean(dueDate) && dueDate < today();
   }
 
   async function duplicatePlan(plan: WorkoutPlan) {

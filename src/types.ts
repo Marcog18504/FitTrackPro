@@ -2,7 +2,7 @@ export type Difficulty = "Base" | "Intermedio" | "Avanzato";
 
 export type SessionStatus = "Da svolgere" | "Completata" | "Saltata";
 
-export type GoalStatus = "Aperto" | "Raggiunto" | "In pausa";
+export type GoalStatus = "Aperto" | "Raggiunto" | "In pausa" | "Fallito";
 
 export type Exercise = {
   id: string;

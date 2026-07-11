@@ -6,7 +6,7 @@ export const muscleGroups = ["Gambe", "Braccia", "Petto", "Schiena", "Addome", "
 
 export const sessionStatuses: SessionStatus[] = ["Da svolgere", "Completata", "Saltata"];
 
-export const goalStatuses: GoalStatus[] = ["Aperto", "Raggiunto", "In pausa"];
+export const goalStatuses: GoalStatus[] = ["Aperto", "Raggiunto", "In pausa", "Fallito"];
 
 export const emptyData = {
   exercises: [],
