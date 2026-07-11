@@ -352,6 +352,8 @@ function DashboardRoute({ appState }: { appState: AppState }) {
         setTimerSeconds={appState.setTimerSeconds}
         setTimerRunning={appState.setTimerRunning}
         onNewExercise={() => appState.createEntity("exercise")}
+        onNewPlan={() => appState.createEntity("plan")}
+        onStartTodayWorkout={() => appState.createEntity("workout")}
       />
     </ScrollView>
   );

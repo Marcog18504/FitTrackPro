@@ -111,11 +111,68 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E0E5DC",
   },
+  statCardTop: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 8,
+  },
+  statIconBox: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#DDEFE7",
+  },
   statValue: {
     fontSize: 28,
     fontWeight: "900",
     color: "#123C2D",
     fontVariant: ["tabular-nums"],
+  },
+  highlightCard: {
+    backgroundColor: "#123C2D",
+    borderRadius: 8,
+    padding: 16,
+    gap: 14,
+    boxShadow: "0 3px 14px rgba(18, 60, 45, 0.16)",
+  },
+  overline: {
+    color: "#BBD8CC",
+    fontSize: 12,
+    fontWeight: "900",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  highlightTitle: {
+    color: "#FFFFFF",
+    fontSize: 20,
+    fontWeight: "900",
+  },
+  highlightMuted: {
+    color: "#DDEFE7",
+  },
+  highlightBadge: {
+    color: "#123C2D",
+    backgroundColor: "#DDEFE7",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    overflow: "hidden",
+    fontWeight: "900",
+    alignSelf: "flex-start",
+  },
+  highlightButton: {
+    backgroundColor: "#FFFFFF",
+    padding: 14,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  highlightButtonText: {
+    color: "#123C2D",
+    fontSize: 16,
+    fontWeight: "900",
   },
   timer: {
     fontSize: 42,
@@ -270,6 +327,32 @@ export const styles = StyleSheet.create({
   progressFill: {
     height: "100%",
     backgroundColor: "#2F8F66",
+  },
+  weekRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 8,
+  },
+  weekDay: {
+    flex: 1,
+    minHeight: 38,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#EEF1EA",
+    borderWidth: 1,
+    borderColor: "#D8DFD4",
+  },
+  activeWeekDay: {
+    backgroundColor: "#2F8F66",
+    borderColor: "#2F8F66",
+  },
+  weekDayText: {
+    color: "#68746B",
+    fontWeight: "900",
+  },
+  activeWeekDayText: {
+    color: "#FFFFFF",
   },
   flex: {
     flex: 1,
