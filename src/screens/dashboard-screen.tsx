@@ -77,7 +77,7 @@ export function DashboardScreen({
         </View>
         <View style={styles.weekRow}>
           {streakDays.map((day) => (
-            <View key={day.label} style={[styles.weekDay, day.trained && styles.activeWeekDay]}>
+            <View key={day.key} style={[styles.weekDay, day.trained && styles.activeWeekDay]}>
               <Text style={[styles.weekDayText, day.trained && styles.activeWeekDayText]}>{day.label}</Text>
             </View>
           ))}
@@ -156,7 +156,7 @@ function getCurrentWeekTrainingDays(workoutDates: string[]) {
       .filter((value): value is number => value !== null),
   );
 
-  return labels.map((label, index) => ({ label, trained: trainedDays.has(index) }));
+  return labels.map((label, index) => ({ key: `${label}-${index}`, label, trained: trainedDays.has(index) }));
 }
 
 function parseDateKey(value: string) {
