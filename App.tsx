@@ -1,6 +1,7 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { Alert, Platform, Pressable, ScrollView, Text, View } from "react-native";
@@ -301,14 +302,26 @@ export default function App() {
 function MainTabs({ appState }: { appState: AppState }) {
   return (
     <Tab.Navigator
-      screenOptions={{
+      screenOptions={({ route }) => ({
         headerStyle: { backgroundColor: "#F6F7F2" },
         headerTintColor: "#17211B",
         headerRight: () => <ResetButton onReset={appState.confirmReset} />,
         tabBarActiveTintColor: "#123C2D",
         tabBarInactiveTintColor: "#68746B",
         tabBarStyle: { backgroundColor: "#FFFFFF", borderTopColor: "#E0E5DC" },
-      }}
+        tabBarIcon: ({ color, size }) => {
+          const icons: Record<keyof MainTabParamList, keyof typeof Ionicons.glyphMap> = {
+            Dashboard: "home-outline",
+            Esercizi: "barbell-outline",
+            Schede: "clipboard-outline",
+            Sessioni: "calendar-outline",
+            Storico: "time-outline",
+            Obiettivi: "flag-outline",
+          };
+
+          return <Ionicons name={icons[route.name]} size={size} color={color} />;
+        },
+      })}
     >
       <Tab.Screen name="Dashboard">{() => <DashboardRoute appState={appState} />}</Tab.Screen>
       <Tab.Screen name="Esercizi">{() => <ExercisesRoute appState={appState} />}</Tab.Screen>
