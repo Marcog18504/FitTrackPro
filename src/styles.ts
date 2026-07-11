@@ -1,0 +1,309 @@
+import { StyleSheet } from "react-native";
+
+export const styles = StyleSheet.create({
+  app: {
+    flex: 1,
+    backgroundColor: "#F6F7F2",
+    paddingTop: 48,
+  },
+  centered: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F6F7F2",
+  },
+  header: {
+    paddingHorizontal: 18,
+    paddingBottom: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  brand: {
+    fontSize: 28,
+    fontWeight: "800",
+    color: "#17211B",
+  },
+  subtitle: {
+    color: "#5E6A60",
+    marginTop: 2,
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: "800",
+    color: "#17211B",
+  },
+  content: {
+    padding: 18,
+    paddingBottom: 40,
+    gap: 14,
+  },
+  stack: {
+    gap: 14,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: "800",
+    color: "#17211B",
+  },
+  card: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 8,
+    padding: 14,
+    gap: 12,
+    borderWidth: 1,
+    borderColor: "#E0E5DC",
+    boxShadow: "0 2px 10px rgba(34, 45, 38, 0.08)",
+  },
+  subCard: {
+    backgroundColor: "#F7F9F5",
+    borderRadius: 8,
+    padding: 12,
+    gap: 12,
+    borderWidth: 1,
+    borderColor: "#DCE4D8",
+  },
+  cardHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  cardTitle: {
+    fontSize: 17,
+    fontWeight: "800",
+    color: "#17211B",
+  },
+  itemText: {
+    color: "#344238",
+  },
+  muted: {
+    color: "#68746B",
+  },
+  badge: {
+    color: "#123C2D",
+    backgroundColor: "#DDEFE7",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    overflow: "hidden",
+    fontWeight: "800",
+    alignSelf: "flex-start",
+  },
+  statsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+  },
+  statCard: {
+    width: "48%",
+    minHeight: 86,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 8,
+    padding: 14,
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#E0E5DC",
+  },
+  statValue: {
+    fontSize: 28,
+    fontWeight: "900",
+    color: "#123C2D",
+    fontVariant: ["tabular-nums"],
+  },
+  timer: {
+    fontSize: 42,
+    fontWeight: "900",
+    color: "#17211B",
+    fontVariant: ["tabular-nums"],
+  },
+  row: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+  },
+  searchRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  smallField: {
+    minWidth: 110,
+    flex: 1,
+  },
+  planExerciseRow: {
+    flexDirection: "row",
+    gap: 10,
+    alignItems: "flex-start",
+    borderTopWidth: 1,
+    borderTopColor: "#DDE5D9",
+    paddingTop: 12,
+  },
+  actions: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  primaryButton: {
+    backgroundColor: "#123C2D",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  primaryButtonText: {
+    color: "#FFFFFF",
+    fontWeight: "800",
+  },
+  secondaryButton: {
+    backgroundColor: "#E8ECE4",
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    borderRadius: 8,
+  },
+  secondaryButtonText: {
+    color: "#26352D",
+    fontWeight: "800",
+  },
+  dangerButton: {
+    backgroundColor: "#F7E4E0",
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    borderRadius: 8,
+  },
+  dangerButtonText: {
+    color: "#9B2416",
+    fontWeight: "800",
+  },
+  ghostButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#C9D2C7",
+  },
+  ghostButtonText: {
+    color: "#25352C",
+    fontWeight: "800",
+  },
+  saveButton: {
+    backgroundColor: "#123C2D",
+    padding: 14,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  saveButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "900",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#CED7CB",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    backgroundColor: "#FFFFFF",
+    color: "#17211B",
+  },
+  textArea: {
+    minHeight: 90,
+    textAlignVertical: "top",
+  },
+  chips: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  chip: {
+    backgroundColor: "#EEF1EA",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: "#D8DFD4",
+  },
+  activeChip: {
+    backgroundColor: "#123C2D",
+    borderColor: "#123C2D",
+  },
+  chipText: {
+    color: "#2D3A32",
+    fontWeight: "700",
+  },
+  activeChipText: {
+    color: "#FFFFFF",
+  },
+  field: {
+    gap: 8,
+  },
+  label: {
+    color: "#26352D",
+    fontWeight: "800",
+  },
+  helperText: {
+    color: "#66736B",
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  requiredMark: {
+    color: "#B42318",
+    fontWeight: "900",
+  },
+  progressRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  progressTrack: {
+    flex: 1,
+    height: 10,
+    borderRadius: 8,
+    backgroundColor: "#E2E7DF",
+    overflow: "hidden",
+  },
+  progressFill: {
+    height: "100%",
+    backgroundColor: "#2F8F66",
+  },
+  flex: {
+    flex: 1,
+  },
+  modal: {
+    flex: 1,
+    backgroundColor: "#F6F7F2",
+    paddingTop: 48,
+  },
+  overlay: {
+    flex: 1,
+    justifyContent: "center",
+    padding: 18,
+    backgroundColor: "rgba(0, 0, 0, 0.35)",
+  },
+  detailBox: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 8,
+    padding: 18,
+    gap: 10,
+  },
+  filterBox: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 8,
+    padding: 18,
+    gap: 14,
+    maxHeight: "82%",
+  },
+  detailLine: {
+    color: "#344238",
+    lineHeight: 21,
+  },
+  detailLabel: {
+    fontWeight: "900",
+    color: "#17211B",
+  },
+});
