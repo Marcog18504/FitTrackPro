@@ -182,9 +182,14 @@ export default function App() {
     if (entity === "workout") {
       const workout = validation.item as WorkoutLog;
       const exists = data.workouts.some((entry) => entry.id === workout.id);
+      const nextWorkouts = exists ? data.workouts.map((entry) => (entry.id === workout.id ? workout : entry)) : [workout, ...data.workouts];
+      const nextSessions = markMatchingSessionCompleted(data.sessions, workout);
+      const nextGoals = exists ? data.goals : advanceGoalsAfterWorkout(data.goals, workout);
       await commit({
         ...data,
-        workouts: exists ? data.workouts.map((entry) => (entry.id === workout.id ? workout : entry)) : [workout, ...data.workouts],
+        workouts: nextWorkouts,
+        sessions: nextSessions,
+        goals: nextGoals,
       });
       return true;
     }
@@ -237,6 +242,55 @@ export default function App() {
     };
 
     setEditing({ entity: "workout", item: workout });
+  }
+
+  function markMatchingSessionCompleted(sessions: PlannedSession[], workout: WorkoutLog) {
+    return sessions.map((session) => {
+      const sameDate = session.date === workout.date;
+      const samePlan = session.planId === workout.planId;
+      const sameDay = session.planDayId === workout.planDayId;
+
+      if (sameDate && samePlan && sameDay && session.status === "Da svolgere") {
+        return { ...session, status: "Completata" as const };
+      }
+
+      return session;
+    });
+  }
+
+  function advanceGoalsAfterWorkout(goals: FitnessGoal[], workout: WorkoutLog) {
+    return goals.map((goal) => {
+      if (goal.status !== "Aperto") return goal;
+
+      const progress = getWorkoutGoalProgress(goal, workout);
+      if (progress <= 0) return goal;
+
+      const current = Math.min(goal.target, goal.current + progress);
+      return {
+        ...goal,
+        current,
+        status: current >= goal.target ? ("Raggiunto" as GoalStatus) : goal.status,
+      };
+    });
+  }
+
+  function getWorkoutGoalProgress(goal: FitnessGoal, workout: WorkoutLog) {
+    const descriptor = `${goal.title} ${goal.description} ${goal.category}`.toLocaleLowerCase("it-IT");
+
+    if (descriptor.includes("minut") || descriptor.includes("durata") || descriptor.includes("tempo")) {
+      return workout.durationMinutes;
+    }
+
+    if (
+      descriptor.includes("frequenza") ||
+      descriptor.includes("allenament") ||
+      descriptor.includes("session") ||
+      descriptor.includes("workout")
+    ) {
+      return 1;
+    }
+
+    return 0;
   }
 
   async function duplicatePlan(plan: WorkoutPlan) {
