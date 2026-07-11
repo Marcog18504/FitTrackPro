@@ -54,7 +54,7 @@ export function DashboardScreen({
           <Text style={styles.highlightBadge}>{todaySession?.status ?? "Pronto"}</Text>
         </View>
         <Pressable style={styles.highlightButton} onPress={todayPlan ? onStartTodayWorkout : onNewPlan}>
-          <Text style={styles.highlightButtonText}>{todayPlan ? "Avvia allenamento" : "Crea scheda"}</Text>
+          <Text style={styles.highlightButtonText}>{todayPlan ? "Registra allenamento" : "Crea scheda"}</Text>
         </Pressable>
       </View>
 

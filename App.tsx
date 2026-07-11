@@ -29,7 +29,7 @@ import {
   WorkoutLog,
   WorkoutPlan,
 } from "./src/types";
-import { makeId } from "./src/utils";
+import { makeId, today } from "./src/utils";
 import { makeUniqueCopyName, validateEntity } from "./src/validation";
 
 type RootStackParamList = {
@@ -55,6 +55,7 @@ type AppState = {
   createEntity: (entity: Entity) => void;
   editEntity: (entity: Entity, item: unknown) => void;
   removeEntity: (entity: Entity, id: string) => void;
+  startTodayWorkout: () => void;
   duplicatePlan: (plan: WorkoutPlan) => Promise<void>;
   duplicateSession: (session: PlannedSession) => Promise<void>;
   setSelected: (selected: SelectedState) => void;
@@ -212,6 +213,32 @@ export default function App() {
     });
   }
 
+  function startTodayWorkout() {
+    const todayKey = today();
+    const todaySession = data.sessions.find((session) => session.date === todayKey);
+    const selectedPlan = data.plans.find((plan) => plan.id === todaySession?.planId) ?? data.plans[0];
+    const selectedDay = selectedPlan?.days.find((day) => day.id === todaySession?.planDayId) ?? selectedPlan?.days[0];
+
+    if (!selectedPlan || !selectedDay) {
+      showMessage("Scheda mancante", "Crea prima una scheda con almeno un giorno di allenamento.");
+      return;
+    }
+
+    const workout: WorkoutLog = {
+      id: makeId("wo"),
+      title: todaySession?.title ? `Allenamento ${todaySession.title}` : `Allenamento ${selectedPlan.name}`,
+      date: todayKey,
+      planId: selectedPlan.id,
+      planDayId: selectedDay.id,
+      durationMinutes: selectedPlan.durationMinutes,
+      exerciseLoads: selectedDay.items.map((item) => ({ planItemId: item.id, loadKg: 0 })),
+      effort: 6,
+      notes: todaySession ? `Da sessione pianificata: ${todaySession.title}` : "",
+    };
+
+    setEditing({ entity: "workout", item: workout });
+  }
+
   async function duplicatePlan(plan: WorkoutPlan) {
     await commit({
       ...data,
@@ -260,6 +287,7 @@ export default function App() {
     createEntity: (entity) => setEditing({ entity }),
     editEntity: (entity, item) => setEditing({ entity, item }),
     removeEntity,
+    startTodayWorkout,
     duplicatePlan,
     duplicateSession,
     setSelected,
@@ -353,7 +381,7 @@ function DashboardRoute({ appState }: { appState: AppState }) {
         setTimerRunning={appState.setTimerRunning}
         onNewExercise={() => appState.createEntity("exercise")}
         onNewPlan={() => appState.createEntity("plan")}
-        onStartTodayWorkout={() => appState.createEntity("workout")}
+        onStartTodayWorkout={appState.startTodayWorkout}
       />
     </ScrollView>
   );
