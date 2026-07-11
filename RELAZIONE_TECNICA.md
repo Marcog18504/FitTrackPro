@@ -174,16 +174,44 @@ Il legame tra schede, sessioni, storico ed esercizi e' basato sugli identificati
 
 Questa scelta evita di duplicare oggetti complessi e mantiene i dati piu' coerenti. Se il nome di un esercizio cambia, le schede continuano a riferirsi allo stesso esercizio tramite identificativo.
 
+### 3.4 Mockup e schermate dell'interfaccia
+
+Per documentare l'interfaccia sono stati inseriti screenshot delle schermate principali dell'app. Gli screenshot non rappresentano wireframe preliminari, ma mockup dell'interfaccia finale: mostrano quindi il risultato effettivo dell'implementazione e aiutano a comprendere la disposizione dei contenuti, la navigazione e le principali azioni disponibili.
+
+Le schermate incluse sono:
+
+- dashboard principale, con riepiloghi, statistiche e timer di recupero;
+- elenco esercizi, con card, ricerca, filtri e azioni disponibili;
+- modale di aggiunta esercizio, con campi controllati e selettori;
+- sezione schede, con elenco delle schede di allenamento;
+- sezione sessioni, dedicata alla pianificazione degli allenamenti;
+- storico allenamenti, con riepilogo degli allenamenti svolti;
+- sezione obiettivi, con stato di avanzamento e barra di progresso.
+
+![Dashboard principale](screenshots/schermata_principale.jpeg)
+
+![Elenco esercizi](screenshots/schermata_esercizi.jpeg)
+
+![Aggiunta esercizio](screenshots/schermata_aggiunta_esercizio.jpeg)
+
+![Schede di allenamento](screenshots/schermata_schede.jpeg)
+
+![Sessioni pianificate](screenshots/schermata_sessioni.jpeg)
+
+![Storico allenamenti](screenshots/schermata_storico.jpeg)
+
+![Obiettivi personali](screenshots/schermata_obiettivi.jpeg)
+
 ## 4. Scelte tecnologiche
 
 ### 4.1 Framework utilizzato
 
 L'app e' stata sviluppata con React Native tramite Expo. Le versioni principali sono:
 
-- Expo SDK 56;
-- React Native 0.85.3;
-- React 19.2.3;
-- TypeScript 6.0.3.
+- Expo SDK 54;
+- React Native 0.81.5;
+- React 19.1.0;
+- TypeScript 5.9.2.
 
 Expo e' stato scelto per semplificare sviluppo, avvio e test su dispositivo fisico tramite Expo Go o su emulatore.
 
@@ -199,10 +227,11 @@ Le dipendenze principali sono:
 - `@react-navigation/native-stack`;
 - `@react-navigation/bottom-tabs`;
 - `@react-native-async-storage/async-storage`;
+- `@expo/vector-icons`;
 - `react-native-screens`;
 - `react-native-safe-area-context`.
 
-React Navigation gestisce il passaggio tra schermate. AsyncStorage gestisce la persistenza locale. Non sono usate API remote o backend, perche' la traccia non li richiede.
+React Navigation gestisce il passaggio tra schermate. AsyncStorage gestisce la persistenza locale. `@expo/vector-icons` viene usata per rendere piu' chiara la barra di navigazione inferiore tramite icone associate alle singole sezioni. Non sono usate API remote o backend, perche' la traccia non li richiede.
 
 ### 4.3 Persistenza locale
 
