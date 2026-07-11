@@ -18,7 +18,8 @@ Gli scenari d'uso principali sono:
 - registrare gli allenamenti effettivamente svolti;
 - salvare il carico usato per i singoli esercizi;
 - creare obiettivi personali e seguirne l'avanzamento;
-- consultare una dashboard con riepiloghi e statistiche.
+- registrare rapidamente l'allenamento previsto per il giorno corrente;
+- consultare una dashboard con riepiloghi, costanza settimanale e timer di recupero.
 
 ## 2. Requisiti
 
@@ -26,17 +27,17 @@ Gli scenari d'uso principali sono:
 
 FitTrackPro implementa le principali funzionalita' richieste dalla traccia progettuale.
 
-La sezione **Esercizi** permette di visualizzare l'elenco degli esercizi, consultare il dettaglio, aggiungere nuovi esercizi, modificarli ed eliminarli. Per ogni esercizio vengono gestiti nome, descrizione, gruppo muscolare principale, gruppi secondari, difficolta', attrezzatura, serie consigliate, ripetizioni consigliate, durata stimata e note. Il gruppo muscolare principale viene scelto da una lista controllata, cosi' da evitare valori incoerenti.
+La sezione **Esercizi** permette di visualizzare l'elenco degli esercizi, consultare il dettaglio, aggiungere nuovi esercizi, modificarli ed eliminarli. Per ogni esercizio vengono gestiti nome, descrizione, gruppo muscolare principale, gruppi secondari, difficolta', attrezzatura, serie consigliate, ripetizioni consigliate, durata stimata e note. Il gruppo muscolare principale e i gruppi secondari vengono scelti da liste controllate, cosi' da evitare valori incoerenti o scritti in modo diverso.
 
 La sezione **Schede** permette di creare, modificare, eliminare e duplicare schede di allenamento. Ogni scheda contiene nome, descrizione, obiettivo, livello, durata prevista, frequenza settimanale, recupero generale, note e una programmazione divisa per giorni. Ogni giorno contiene esercizi collegati all'archivio, con serie e ripetizioni specifiche.
 
 La sezione **Sessioni** consente di pianificare allenamenti futuri. Una sessione contiene titolo, data, tipo, scheda associata, giorno della scheda, stato e note. Gli esercizi della sessione non vengono inseriti manualmente: sono ricavati automaticamente dal giorno scelto nella scheda. Questa scelta rende la pianificazione piu' coerente, perche' una sessione collegata a una scheda eredita il programma previsto.
 
-La sezione **Storico** consente di registrare gli allenamenti svolti. Ogni allenamento contiene titolo, data, scheda associata, giorno svolto, durata, carico opzionale per singolo esercizio, fatica percepita da 1 a 10 e note. Lo storico mostra anche un confronto semplice con l'allenamento precedente, basato sulla differenza di durata.
+La sezione **Storico** consente di registrare gli allenamenti svolti. Ogni allenamento contiene titolo, data, scheda associata, giorno svolto, durata, carico opzionale per singolo esercizio, fatica percepita da 1 a 10 e note. Quando viene registrato un allenamento collegato a una sessione prevista nello stesso giorno, la sessione passa automaticamente da "Da svolgere" a "Completata". Lo storico mostra anche un confronto semplice con l'allenamento precedente, basato sulla differenza di durata.
 
-La sezione **Obiettivi** consente di creare, modificare, visualizzare ed eliminare obiettivi personali. Ogni obiettivo contiene titolo, descrizione, categoria, valore target, valore attuale, data di inizio, eventuale scadenza, stato e note. L'avanzamento viene mostrato tramite percentuale e barra di progresso. Quando il valore attuale raggiunge o supera il target, l'obiettivo viene considerato raggiunto.
+La sezione **Obiettivi** consente di creare, modificare, visualizzare ed eliminare obiettivi personali. Ogni obiettivo contiene titolo, descrizione, categoria, valore target, valore attuale, data di inizio, eventuale scadenza, stato e note. L'avanzamento viene mostrato tramite percentuale e barra di progresso. Quando il valore attuale raggiunge o supera il target, l'obiettivo viene considerato raggiunto. Se invece la data di fine viene superata senza raggiungere il target, l'obiettivo viene impostato come fallito. Gli obiettivi aperti collegati a minuti, durata, allenamenti o sessioni possono avanzare automaticamente quando viene registrato un nuovo allenamento; gli obiettivi falliti o non aperti non vengono incrementati.
 
-La **Dashboard** mostra un riepilogo generale con numero di esercizi, numero di schede, sessioni nella settimana, allenamenti registrati, minuti totali di allenamento e obiettivi raggiunti. Mostra inoltre la distribuzione degli esercizi per gruppo muscolare e include un timer di recupero.
+La **Dashboard** mostra un riepilogo generale con numero di esercizi, numero di schede, sessioni nella settimana, allenamenti registrati, minuti totali di allenamento e obiettivi raggiunti. Include una card di ingresso rapido che propone la scheda programmata per oggi e apre direttamente la registrazione dell'allenamento. Mostra inoltre icone nei riquadri statistici, una riga di costanza settimanale colorata in base agli allenamenti registrati, la distribuzione compatta degli esercizi per gruppo muscolare e un timer di recupero.
 
 ### 2.2 Ricerca, filtri e organizzazione
 
@@ -58,11 +59,11 @@ I filtri sono organizzati in una finestra dedicata con sezioni separate. Quando 
 
 Sono state implementate due feature avanzate principali.
 
-La prima e' il **timer di recupero**, presente nella dashboard. L'utente puo' avviare o mettere in pausa il timer e scegliere rapidamente durate predefinite di 90 secondi o 3 minuti. La funzione e' coerente con il dominio dell'app, perche' il recupero tra le serie e' una parte importante dell'allenamento.
+La prima e' il **timer di recupero**, presente nella dashboard. L'utente puo' avviare o mettere in pausa il timer, scegliere rapidamente durate predefinite di 1:30 o 3:00 minuti e aumentare il tempo con un pulsante +30s. La funzione e' coerente con il dominio dell'app, perche' il recupero tra le serie e' una parte importante dell'allenamento.
 
 La seconda e' la **duplicazione di schede e sessioni**. L'utente puo' duplicare una scheda o una sessione esistente per creare rapidamente una variante. Il sistema genera nuovi identificativi e assegna un nome non duplicato, ad esempio aggiungendo "copia" o "copia 2".
 
-Sono state inoltre implementate validazioni robuste sui dati, migrazioni per dati salvati con versioni precedenti e inserimento automatico dei trattini nelle date.
+Sono state inoltre implementate validazioni robuste sui dati, migrazioni per dati salvati con versioni precedenti, inserimento automatico dei trattini nelle date, conferme compatibili anche con la versione web e aggiornamenti automatici tra storico, sessioni e obiettivi.
 
 ### 2.4 Funzionalita' considerate ma non implementate
 
@@ -180,7 +181,7 @@ Per documentare l'interfaccia sono stati inseriti screenshot delle schermate pri
 
 Le schermate incluse sono:
 
-- dashboard principale, con riepiloghi, statistiche e timer di recupero;
+- dashboard principale, con ingresso rapido all'allenamento, riepiloghi, costanza settimanale e timer di recupero;
 - elenco esercizi, con card, ricerca, filtri e azioni disponibili;
 - modale di aggiunta esercizio, con campi controllati e selettori;
 - sezione schede, con elenco delle schede di allenamento;
@@ -188,7 +189,7 @@ Le schermate incluse sono:
 - storico allenamenti, con riepilogo degli allenamenti svolti;
 - sezione obiettivi, con stato di avanzamento e barra di progresso.
 
-![Dashboard principale](screenshots/schermata_principale.jpeg)
+![Dashboard principale](screenshots/dashboard.jpeg)
 
 ![Elenco esercizi](screenshots/schermata_esercizi.jpeg)
 
@@ -206,11 +207,12 @@ Le schermate incluse sono:
 
 ### 4.1 Framework utilizzato
 
-L'app e' stata sviluppata con React Native tramite Expo. Le versioni principali sono:
+L'app e' stata sviluppata con React Native tramite Expo. Le versioni principali, lette dal file `package.json`, sono:
 
-- Expo SDK 54;
+- Expo SDK 54 (`expo` 54.0.0);
 - React Native 0.81.5;
 - React 19.1.0;
+- React DOM 19.1.0;
 - TypeScript 5.9.2.
 
 Expo e' stato scelto per semplificare sviluppo, avvio e test su dispositivo fisico tramite Expo Go o su emulatore.
@@ -220,16 +222,18 @@ Expo e' stato scelto per semplificare sviluppo, avvio e test su dispositivo fisi
 Le dipendenze principali sono:
 
 - `expo`;
-- `react`;
-- `react-native`;
-- `expo-status-bar`;
-- `@react-navigation/native`;
-- `@react-navigation/native-stack`;
-- `@react-navigation/bottom-tabs`;
-- `@react-native-async-storage/async-storage`;
-- `@expo/vector-icons`;
-- `react-native-screens`;
-- `react-native-safe-area-context`.
+- `react` 19.1.0;
+- `react-dom` 19.1.0;
+- `react-native` 0.81.5;
+- `react-native-web` 0.19.13;
+- `expo-status-bar` 2.0.1;
+- `@react-navigation/native` 7.0.0;
+- `@react-navigation/native-stack` 7.0.0;
+- `@react-navigation/bottom-tabs` 7.0.0;
+- `@react-native-async-storage/async-storage` 2.1.1;
+- `@expo/vector-icons` 15.0.2;
+- `react-native-screens` 4.4.0;
+- `react-native-safe-area-context` 4.12.0.
 
 React Navigation gestisce il passaggio tra schermate. AsyncStorage gestisce la persistenza locale. `@expo/vector-icons` viene usata per rendere piu' chiara la barra di navigazione inferiore tramite icone associate alle singole sezioni. Non sono usate API remote o backend, perche' la traccia non li richiede.
 
@@ -243,6 +247,7 @@ Ogni modifica viene salvata in AsyncStorage serializzando l'oggetto `FitnessData
 - sessioni vecchie senza giorno della scheda;
 - storico vecchio con carico globale;
 - gruppi muscolari vecchi come "Core" o "Addominali".
+- obiettivi scaduti non completati, che vengono normalizzati nello stato "Fallito".
 
 ## 5. Implementazione
 
@@ -255,6 +260,7 @@ In particolare gestisce:
 - dati dell'app;
 - statistiche calcolate;
 - stato del timer;
+- collegamento rapido alla sessione del giorno;
 - creazione e modifica delle entita';
 - eliminazione;
 - duplicazione di schede e sessioni;
@@ -291,9 +297,9 @@ Gli stati principali sono:
 
 L'inserimento e la modifica avvengono tramite `EditModal`. La stessa modale viene riutilizzata per esercizi, schede, sessioni, allenamenti e obiettivi. In base al tipo di entita' vengono mostrati campi diversi.
 
-La cancellazione richiede conferma tramite `Alert`, cosi' da ridurre il rischio di eliminazioni accidentali.
+La cancellazione richiede conferma. Su mobile viene usato `Alert`, mentre su web vengono usate le API native del browser tramite `globalThis.confirm`, cosi' da mantenere lo stesso comportamento anche quando l'app viene eseguita con Expo Web.
 
-Il salvataggio passa dalla funzione di validazione centralizzata. Se il dato non e' valido, l'app mostra un messaggio di errore e mantiene aperta la modale, permettendo all'utente di correggere l'input.
+Il salvataggio passa dalla funzione di validazione centralizzata. Se il dato non e' valido, l'app mostra un messaggio di errore e mantiene aperta la modale, permettendo all'utente di correggere l'input. Anche in questo caso il messaggio e' gestito in modo compatibile con web e mobile.
 
 ### 5.4 Validazione e controllo degli input
 
@@ -348,9 +354,16 @@ La dashboard calcola e mostra:
 - numero di allenamenti registrati;
 - minuti totali di allenamento;
 - obiettivi raggiunti rispetto al totale;
+- costanza settimanale basata sulle date degli allenamenti registrati;
 - distribuzione degli esercizi per gruppo muscolare.
 
 Questi dati sono ricavati localmente dagli array salvati nell'app.
+
+### 5.7 Aggiornamenti automatici tra entita'
+
+Alcune azioni dell'utente aggiornano piu' entita' in modo coordinato. La registrazione di un allenamento puo' completare automaticamente la sessione pianificata corrispondente, quando data, scheda e giorno della scheda coincidono. Inoltre, se l'allenamento e' nuovo, gli obiettivi aperti legati a minuti, durata, allenamenti o sessioni vengono incrementati in base ai dati appena salvati.
+
+Gli obiettivi vengono normalizzati sia al caricamento dei dati sia durante il salvataggio: se il valore attuale raggiunge il target diventano "Raggiunto"; se la data di fine e' passata e il target non e' stato raggiunto diventano "Fallito". Gli obiettivi falliti, raggiunti o in pausa non vengono avanzati automaticamente da nuovi allenamenti.
 
 ## 6. Limitazioni note
 
@@ -360,7 +373,7 @@ Le statistiche sono volutamente semplici: non includono grafici avanzati sull'an
 
 La pianificazione delle sessioni e' collegata alle schede e ai giorni della scheda. Questo rende i dati coerenti, ma limita la possibilita' di creare sessioni completamente libere senza scheda associata.
 
-Gli obiettivi sono gestiti come dati autonomi: l'avanzamento viene indicato dall'utente e non e' calcolato automaticamente dagli allenamenti registrati.
+Gli obiettivi possono avanzare automaticamente solo per categorie riconoscibili dal testo, ad esempio minuti, durata, allenamenti o sessioni. Obiettivi piu' specifici, come quelli basati su carichi o misure corporee, restano aggiornabili manualmente.
 
 ## 7. Istruzioni per l'esecuzione
 

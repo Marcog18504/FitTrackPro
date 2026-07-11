@@ -44,6 +44,10 @@ yarn-error.*
 # generated archives
 FitTrackPro-progetto.zip
 
+# local generated files
+screenshots/
+tmp/
+
 # generated native folders
 /ios
 /android

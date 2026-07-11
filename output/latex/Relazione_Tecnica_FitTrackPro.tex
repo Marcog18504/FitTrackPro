@@ -42,7 +42,8 @@ Gli scenari d'uso principali sono:
   \item registrare gli allenamenti effettivamente svolti;
   \item salvare il carico usato per i singoli esercizi;
   \item creare obiettivi personali e seguirne l'avanzamento;
-  \item consultare una dashboard con riepiloghi e statistiche.
+  \item registrare rapidamente l'allenamento previsto per il giorno corrente;
+  \item consultare una dashboard con riepiloghi, costanza settimanale e timer di recupero.
 \end{itemize}
 
 \section{2. Requisiti}
@@ -51,17 +52,17 @@ Gli scenari d'uso principali sono:
 
 FitTrackPro implementa le principali funzionalita' richieste dalla traccia progettuale.
 
-La sezione \textbf{Esercizi} permette di visualizzare l'elenco degli esercizi, consultare il dettaglio, aggiungere nuovi esercizi, modificarli ed eliminarli. Per ogni esercizio vengono gestiti nome, descrizione, gruppo muscolare principale, gruppi secondari, difficolta', attrezzatura, serie consigliate, ripetizioni consigliate, durata stimata e note. Il gruppo muscolare principale viene scelto da una lista controllata, cosi' da evitare valori incoerenti.
+La sezione \textbf{Esercizi} permette di visualizzare l'elenco degli esercizi, consultare il dettaglio, aggiungere nuovi esercizi, modificarli ed eliminarli. Per ogni esercizio vengono gestiti nome, descrizione, gruppo muscolare principale, gruppi secondari, difficolta', attrezzatura, serie consigliate, ripetizioni consigliate, durata stimata e note. Il gruppo muscolare principale e i gruppi secondari vengono scelti da liste controllate, cosi' da evitare valori incoerenti o scritti in modo diverso.
 
 La sezione \textbf{Schede} permette di creare, modificare, eliminare e duplicare schede di allenamento. Ogni scheda contiene nome, descrizione, obiettivo, livello, durata prevista, frequenza settimanale, recupero generale, note e una programmazione divisa per giorni. Ogni giorno contiene esercizi collegati all'archivio, con serie e ripetizioni specifiche.
 
 La sezione \textbf{Sessioni} consente di pianificare allenamenti futuri. Una sessione contiene titolo, data, tipo, scheda associata, giorno della scheda, stato e note. Gli esercizi della sessione non vengono inseriti manualmente: sono ricavati automaticamente dal giorno scelto nella scheda. Questa scelta rende la pianificazione piu' coerente, perche' una sessione collegata a una scheda eredita il programma previsto.
 
-La sezione \textbf{Storico} consente di registrare gli allenamenti svolti. Ogni allenamento contiene titolo, data, scheda associata, giorno svolto, durata, carico opzionale per singolo esercizio, fatica percepita da 1 a 10 e note. Lo storico mostra anche un confronto semplice con l'allenamento precedente, basato sulla differenza di durata.
+La sezione \textbf{Storico} consente di registrare gli allenamenti svolti. Ogni allenamento contiene titolo, data, scheda associata, giorno svolto, durata, carico opzionale per singolo esercizio, fatica percepita da 1 a 10 e note. Quando viene registrato un allenamento collegato a una sessione prevista nello stesso giorno, la sessione passa automaticamente da "Da svolgere" a "Completata". Lo storico mostra anche un confronto semplice con l'allenamento precedente, basato sulla differenza di durata.
 
-La sezione \textbf{Obiettivi} consente di creare, modificare, visualizzare ed eliminare obiettivi personali. Ogni obiettivo contiene titolo, descrizione, categoria, valore target, valore attuale, data di inizio, eventuale scadenza, stato e note. L'avanzamento viene mostrato tramite percentuale e barra di progresso. Quando il valore attuale raggiunge o supera il target, l'obiettivo viene considerato raggiunto.
+La sezione \textbf{Obiettivi} consente di creare, modificare, visualizzare ed eliminare obiettivi personali. Ogni obiettivo contiene titolo, descrizione, categoria, valore target, valore attuale, data di inizio, eventuale scadenza, stato e note. L'avanzamento viene mostrato tramite percentuale e barra di progresso. Quando il valore attuale raggiunge o supera il target, l'obiettivo viene considerato raggiunto. Se invece la data di fine viene superata senza raggiungere il target, l'obiettivo viene impostato come fallito. Gli obiettivi aperti collegati a minuti, durata, allenamenti o sessioni possono avanzare automaticamente quando viene registrato un nuovo allenamento; gli obiettivi falliti o non aperti non vengono incrementati.
 
-La \textbf{Dashboard} mostra un riepilogo generale con numero di esercizi, numero di schede, sessioni nella settimana, allenamenti registrati, minuti totali di allenamento e obiettivi raggiunti. Mostra inoltre la distribuzione degli esercizi per gruppo muscolare e include un timer di recupero.
+La \textbf{Dashboard} mostra un riepilogo generale con numero di esercizi, numero di schede, sessioni nella settimana, allenamenti registrati, minuti totali di allenamento e obiettivi raggiunti. Include una card di ingresso rapido che propone la scheda programmata per oggi e apre direttamente la registrazione dell'allenamento. Mostra inoltre icone nei riquadri statistici, una riga di costanza settimanale colorata in base agli allenamenti registrati, la distribuzione compatta degli esercizi per gruppo muscolare e un timer di recupero.
 
 \subsection{2.2 Ricerca, filtri e organizzazione}
 
@@ -85,11 +86,11 @@ I filtri sono organizzati in una finestra dedicata con sezioni separate. Quando 
 
 Sono state implementate due feature avanzate principali.
 
-La prima e' il \textbf{timer di recupero}, presente nella dashboard. L'utente puo' avviare o mettere in pausa il timer e scegliere rapidamente durate predefinite di 90 secondi o 3 minuti. La funzione e' coerente con il dominio dell'app, perche' il recupero tra le serie e' una parte importante dell'allenamento.
+La prima e' il \textbf{timer di recupero}, presente nella dashboard. L'utente puo' avviare o mettere in pausa il timer, scegliere rapidamente durate predefinite di 1:30 o 3:00 minuti e aumentare il tempo con un pulsante +30s. La funzione e' coerente con il dominio dell'app, perche' il recupero tra le serie e' una parte importante dell'allenamento.
 
 La seconda e' la \textbf{duplicazione di schede e sessioni}. L'utente puo' duplicare una scheda o una sessione esistente per creare rapidamente una variante. Il sistema genera nuovi identificativi e assegna un nome non duplicato, ad esempio aggiungendo "copia" o "copia 2".
 
-Sono state inoltre implementate validazioni robuste sui dati, migrazioni per dati salvati con versioni precedenti e inserimento automatico dei trattini nelle date.
+Sono state inoltre implementate validazioni robuste sui dati, migrazioni per dati salvati con versioni precedenti, inserimento automatico dei trattini nelle date, conferme compatibili anche con la versione web e aggiornamenti automatici tra storico, sessioni e obiettivi.
 
 \subsection{2.4 Funzionalita' considerate ma non implementate}
 
@@ -218,7 +219,7 @@ Per documentare l'interfaccia sono stati inseriti screenshot delle schermate pri
 Le schermate incluse sono:
 
 \begin{itemize}
-  \item dashboard principale, con riepiloghi, statistiche e timer di recupero;
+  \item dashboard principale, con ingresso rapido all'allenamento, riepiloghi, costanza settimanale e timer di recupero;
   \item elenco esercizi, con card, ricerca, filtri e azioni disponibili;
   \item modale di aggiunta esercizio, con campi controllati e selettori;
   \item sezione schede, con elenco delle schede di allenamento;
@@ -229,7 +230,7 @@ Le schermate incluse sono:
 
 \begin{figure}[H]
   \centering
-  \includegraphics[height=0.72\textheight,keepaspectratio]{\detokenize{screenshots/schermata_principale.jpeg}}
+  \includegraphics[height=0.72\textheight,keepaspectratio]{\detokenize{screenshots/dashboard.jpeg}}
   \caption{Dashboard principale}
 \end{figure}
 
@@ -273,12 +274,13 @@ Le schermate incluse sono:
 
 \subsection{4.1 Framework utilizzato}
 
-L'app e' stata sviluppata con React Native tramite Expo. Le versioni principali sono:
+L'app e' stata sviluppata con React Native tramite Expo. Le versioni principali, lette dal file \texttt{package.json}, sono:
 
 \begin{itemize}
-  \item Expo SDK 54;
+  \item Expo SDK 54 (\texttt{expo} 54.0.0);
   \item React Native 0.81.5;
   \item React 19.1.0;
+  \item React DOM 19.1.0;
   \item TypeScript 5.9.2.
 \end{itemize}
 
@@ -290,16 +292,18 @@ Le dipendenze principali sono:
 
 \begin{itemize}
   \item \texttt{expo};
-  \item \texttt{react};
-  \item \texttt{react-native};
-  \item \texttt{expo-status-bar};
-  \item \texttt{@react-navigation/native};
-  \item \texttt{@react-navigation/native-stack};
-  \item \texttt{@react-navigation/bottom-tabs};
-  \item \texttt{@react-native-async-storage/async-storage};
-  \item \texttt{@expo/vector-icons};
-  \item \texttt{react-native-screens};
-  \item \texttt{react-native-safe-area-context}.
+  \item \texttt{react} 19.1.0;
+  \item \texttt{react-dom} 19.1.0;
+  \item \texttt{react-native} 0.81.5;
+  \item \texttt{react-native-web} 0.19.13;
+  \item \texttt{expo-status-bar} 2.0.1;
+  \item \texttt{@react-navigation/native} 7.0.0;
+  \item \texttt{@react-navigation/native-stack} 7.0.0;
+  \item \texttt{@react-navigation/bottom-tabs} 7.0.0;
+  \item \texttt{@react-native-async-storage/async-storage} 2.1.1;
+  \item \texttt{@expo/vector-icons} 15.0.2;
+  \item \texttt{react-native-screens} 4.4.0;
+  \item \texttt{react-native-safe-area-context} 4.12.0.
 \end{itemize}
 
 React Navigation gestisce il passaggio tra schermate. AsyncStorage gestisce la persistenza locale. \texttt{@expo/vector-icons} viene usata per rendere piu' chiara la barra di navigazione inferiore tramite icone associate alle singole sezioni. Non sono usate API remote o backend, perche' la traccia non li richiede.
@@ -315,6 +319,7 @@ Ogni modifica viene salvata in AsyncStorage serializzando l'oggetto \texttt{Fitn
   \item sessioni vecchie senza giorno della scheda;
   \item storico vecchio con carico globale;
   \item gruppi muscolari vecchi come "Core" o "Addominali".
+  \item obiettivi scaduti non completati, che vengono normalizzati nello stato "Fallito".
 \end{itemize}
 
 \section{5. Implementazione}
@@ -329,6 +334,7 @@ In particolare gestisce:
   \item dati dell'app;
   \item statistiche calcolate;
   \item stato del timer;
+  \item collegamento rapido alla sessione del giorno;
   \item creazione e modifica delle entita';
   \item eliminazione;
   \item duplicazione di schede e sessioni;
@@ -370,9 +376,9 @@ Gli stati principali sono:
 
 L'inserimento e la modifica avvengono tramite \texttt{EditModal}. La stessa modale viene riutilizzata per esercizi, schede, sessioni, allenamenti e obiettivi. In base al tipo di entita' vengono mostrati campi diversi.
 
-La cancellazione richiede conferma tramite \texttt{Alert}, cosi' da ridurre il rischio di eliminazioni accidentali.
+La cancellazione richiede conferma. Su mobile viene usato \texttt{Alert}, mentre su web vengono usate le API native del browser tramite \texttt{globalThis.confirm}, cosi' da mantenere lo stesso comportamento anche quando l'app viene eseguita con Expo Web.
 
-Il salvataggio passa dalla funzione di validazione centralizzata. Se il dato non e' valido, l'app mostra un messaggio di errore e mantiene aperta la modale, permettendo all'utente di correggere l'input.
+Il salvataggio passa dalla funzione di validazione centralizzata. Se il dato non e' valido, l'app mostra un messaggio di errore e mantiene aperta la modale, permettendo all'utente di correggere l'input. Anche in questo caso il messaggio e' gestito in modo compatibile con web e mobile.
 
 \subsection{5.4 Validazione e controllo degli input}
 
@@ -432,10 +438,17 @@ La dashboard calcola e mostra:
   \item numero di allenamenti registrati;
   \item minuti totali di allenamento;
   \item obiettivi raggiunti rispetto al totale;
+  \item costanza settimanale basata sulle date degli allenamenti registrati;
   \item distribuzione degli esercizi per gruppo muscolare.
 \end{itemize}
 
 Questi dati sono ricavati localmente dagli array salvati nell'app.
+
+\subsection{5.7 Aggiornamenti automatici tra entita'}
+
+Alcune azioni dell'utente aggiornano piu' entita' in modo coordinato. La registrazione di un allenamento puo' completare automaticamente la sessione pianificata corrispondente, quando data, scheda e giorno della scheda coincidono. Inoltre, se l'allenamento e' nuovo, gli obiettivi aperti legati a minuti, durata, allenamenti o sessioni vengono incrementati in base ai dati appena salvati.
+
+Gli obiettivi vengono normalizzati sia al caricamento dei dati sia durante il salvataggio: se il valore attuale raggiunge il target diventano "Raggiunto"; se la data di fine e' passata e il target non e' stato raggiunto diventano "Fallito". Gli obiettivi falliti, raggiunti o in pausa non vengono avanzati automaticamente da nuovi allenamenti.
 
 \section{6. Limitazioni note}
 
@@ -445,7 +458,7 @@ Le statistiche sono volutamente semplici: non includono grafici avanzati sull'an
 
 La pianificazione delle sessioni e' collegata alle schede e ai giorni della scheda. Questo rende i dati coerenti, ma limita la possibilita' di creare sessioni completamente libere senza scheda associata.
 
-Gli obiettivi sono gestiti come dati autonomi: l'avanzamento viene indicato dall'utente e non e' calcolato automaticamente dagli allenamenti registrati.
+Gli obiettivi possono avanzare automaticamente solo per categorie riconoscibili dal testo, ad esempio minuti, durata, allenamenti o sessioni. Obiettivi piu' specifici, come quelli basati su carichi o misure corporee, restano aggiornabili manualmente.
 
 \section{7. Istruzioni per l'esecuzione}
 
