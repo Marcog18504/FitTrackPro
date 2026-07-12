@@ -240,15 +240,15 @@ Le dipendenze principali sono:
 - `react` 19.1.0;
 - `react-dom` 19.1.0;
 - `react-native` 0.81.5;
-- `react-native-web` 0.19.13;
-- `expo-status-bar` 2.0.1;
+- `react-native-web` 0.21.0;
+- `expo-status-bar` 3.0.9;
 - `@react-navigation/native` 7.0.0;
 - `@react-navigation/native-stack` 7.0.0;
 - `@react-navigation/bottom-tabs` 7.0.0;
-- `@react-native-async-storage/async-storage` 2.1.1;
+- `@react-native-async-storage/async-storage` 2.2.0;
 - `@expo/vector-icons` 15.0.2;
-- `react-native-screens` 4.4.0;
-- `react-native-safe-area-context` 4.12.0.
+- `react-native-screens` 4.16.0;
+- `react-native-safe-area-context` 5.6.0.
 
 React Navigation gestisce il passaggio tra schermate. AsyncStorage gestisce la persistenza locale. `@expo/vector-icons` viene usata per rendere piu' chiara la barra di navigazione inferiore tramite icone associate alle singole sezioni. Non sono usate API remote o backend, perche' la traccia non li richiede.
 
@@ -433,8 +433,7 @@ Durante il controllo finale sono state eseguite le seguenti verifiche:
 - controllo dell'assenza di residui della precedente navigazione manuale;
 - controllo dell'assenza di riferimenti a Expo Router, non usato nella versione finale;
 - controllo dei campi `Field`, ciascuno con una tipologia di input esplicita;
-- controllo dei soli due punti di creazione diretta di `TextInput`, entrambi protetti dalla sanitizzazione;
-- generazione del bundle Android con `npx expo export --platform android`.
+- controllo dei soli due punti di creazione diretta di `TextInput`, entrambi protetti dalla sanitizzazione.
 
 Le verifiche TypeScript ed Expo risultano superate.
 

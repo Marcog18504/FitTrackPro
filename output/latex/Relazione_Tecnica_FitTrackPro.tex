@@ -310,15 +310,15 @@ Le dipendenze principali sono:
   \item \texttt{react} 19.1.0;
   \item \texttt{react-dom} 19.1.0;
   \item \texttt{react-native} 0.81.5;
-  \item \texttt{react-native-web} 0.19.13;
-  \item \texttt{expo-status-bar} 2.0.1;
+  \item \texttt{react-native-web} 0.21.0;
+  \item \texttt{expo-status-bar} 3.0.9;
   \item \texttt{@react-navigation/native} 7.0.0;
   \item \texttt{@react-navigation/native-stack} 7.0.0;
   \item \texttt{@react-navigation/bottom-tabs} 7.0.0;
-  \item \texttt{@react-native-async-storage/async-storage} 2.1.1;
+  \item \texttt{@react-native-async-storage/async-storage} 2.2.0;
   \item \texttt{@expo/vector-icons} 15.0.2;
-  \item \texttt{react-native-screens} 4.4.0;
-  \item \texttt{react-native-safe-area-context} 4.12.0.
+  \item \texttt{react-native-screens} 4.16.0;
+  \item \texttt{react-native-safe-area-context} 5.6.0.
 \end{itemize}
 
 React Navigation gestisce il passaggio tra schermate. AsyncStorage gestisce la persistenza locale. \texttt{@expo/vector-icons} viene usata per rendere piu' chiara la barra di navigazione inferiore tramite icone associate alle singole sezioni. Non sono usate API remote o backend, perche' la traccia non li richiede.
@@ -519,8 +519,7 @@ Durante il controllo finale sono state eseguite le seguenti verifiche:
   \item controllo dell'assenza di residui della precedente navigazione manuale;
   \item controllo dell'assenza di riferimenti a Expo Router, non usato nella versione finale;
   \item controllo dei campi \texttt{Field}, ciascuno con una tipologia di input esplicita;
-  \item controllo dei soli due punti di creazione diretta di \texttt{TextInput}, entrambi protetti dalla sanitizzazione;
-  \item generazione del bundle Android con \texttt{npx expo export --platform android}.
+  \item controllo dei soli due punti di creazione diretta di \texttt{TextInput}, entrambi protetti dalla sanitizzazione.
 \end{itemize}
 
 Le verifiche TypeScript ed Expo risultano superate.
