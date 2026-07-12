@@ -8,6 +8,7 @@ import { Alert, Platform, Pressable, ScrollView, Text, View } from "react-native
 import { DetailModal } from "./src/components/detail-modal";
 import { EditModal } from "./src/components/edit-modal";
 import { emptyData } from "./src/constants";
+import { normalizeGoal, refreshGoals } from "./src/goals";
 import { DashboardScreen } from "./src/screens/dashboard-screen";
 import { ExercisesScreen } from "./src/screens/exercises-screen";
 import { GoalsScreen } from "./src/screens/goals-screen";
@@ -23,7 +24,6 @@ import {
   FitnessData,
   FitnessGoal,
   FitnessStats,
-  GoalStatus,
   PlannedSession,
   SelectedState,
   WorkoutLog,
@@ -162,10 +162,11 @@ export default function App() {
     if (entity === "plan") {
       const plan = validation.item as WorkoutPlan;
       const exists = data.plans.some((entry) => entry.id === plan.id);
-      await commit({
+      const nextData = {
         ...data,
         plans: exists ? data.plans.map((entry) => (entry.id === plan.id ? plan : entry)) : [plan, ...data.plans],
-      });
+      };
+      await commit({ ...nextData, goals: refreshGoals(nextData) });
       return true;
     }
 
@@ -184,25 +185,30 @@ export default function App() {
       const exists = data.workouts.some((entry) => entry.id === workout.id);
       const nextWorkouts = exists ? data.workouts.map((entry) => (entry.id === workout.id ? workout : entry)) : [workout, ...data.workouts];
       const nextSessions = markMatchingSessionCompleted(data.sessions, workout);
-      const normalizedGoals = data.goals.map(normalizeGoalStatus);
-      const nextGoals = exists ? normalizedGoals : advanceGoalsAfterWorkout(normalizedGoals, workout);
-      await commit({
+      const nextData = {
         ...data,
         workouts: nextWorkouts,
         sessions: nextSessions,
-        goals: nextGoals,
-      });
+      };
+      await commit({ ...nextData, goals: refreshGoals(nextData) });
       return true;
     }
 
     if (entity === "goal") {
       const goal = validation.item as FitnessGoal;
-      const normalized = normalizeGoalStatus(goal);
+      const baseData = {
+        ...data,
+        goals: data.goals.some((entry) => entry.id === goal.id)
+          ? data.goals.map((entry) => (entry.id === goal.id ? goal : entry))
+          : [goal, ...data.goals],
+      };
+      const normalized = normalizeGoal(goal, baseData);
       const exists = data.goals.some((entry) => entry.id === normalized.id);
-      await commit({
+      const nextData = {
         ...data,
         goals: exists ? data.goals.map((entry) => (entry.id === normalized.id ? normalized : entry)) : [normalized, ...data.goals],
-      });
+      };
+      await commit({ ...nextData, goals: refreshGoals(nextData) });
       return true;
     }
 
@@ -211,10 +217,19 @@ export default function App() {
 
   function removeEntity(entity: Entity, id: string) {
     confirmDestructive("Elimina", "Confermi l'eliminazione?", "Elimina", async () => {
-      if (entity === "exercise") await commit({ ...data, exercises: data.exercises.filter((item) => item.id !== id) });
-      if (entity === "plan") await commit({ ...data, plans: data.plans.filter((item) => item.id !== id) });
+      if (entity === "exercise") {
+        const nextData = { ...data, exercises: data.exercises.filter((item) => item.id !== id) };
+        await commit({ ...nextData, goals: refreshGoals(nextData) });
+      }
+      if (entity === "plan") {
+        const nextData = { ...data, plans: data.plans.filter((item) => item.id !== id) };
+        await commit({ ...nextData, goals: refreshGoals(nextData) });
+      }
       if (entity === "session") await commit({ ...data, sessions: data.sessions.filter((item) => item.id !== id) });
-      if (entity === "workout") await commit({ ...data, workouts: data.workouts.filter((item) => item.id !== id) });
+      if (entity === "workout") {
+        const nextData = { ...data, workouts: data.workouts.filter((item) => item.id !== id) };
+        await commit({ ...nextData, goals: refreshGoals(nextData) });
+      }
       if (entity === "goal") await commit({ ...data, goals: data.goals.filter((item) => item.id !== id) });
     });
   }
@@ -257,57 +272,6 @@ export default function App() {
 
       return session;
     });
-  }
-
-  function advanceGoalsAfterWorkout(goals: FitnessGoal[], workout: WorkoutLog) {
-    return goals.map((goal) => {
-      if (goal.status !== "Aperto") return goal;
-
-      const progress = getWorkoutGoalProgress(goal, workout);
-      if (progress <= 0) return goal;
-
-      const current = Math.min(goal.target, goal.current + progress);
-      return {
-        ...goal,
-        current,
-        status: current >= goal.target ? ("Raggiunto" as GoalStatus) : goal.status,
-      };
-    });
-  }
-
-  function getWorkoutGoalProgress(goal: FitnessGoal, workout: WorkoutLog) {
-    const descriptor = `${goal.title} ${goal.description} ${goal.category}`.toLocaleLowerCase("it-IT");
-
-    if (descriptor.includes("minut") || descriptor.includes("durata") || descriptor.includes("tempo")) {
-      return workout.durationMinutes;
-    }
-
-    if (
-      descriptor.includes("frequenza") ||
-      descriptor.includes("allenament") ||
-      descriptor.includes("session") ||
-      descriptor.includes("workout")
-    ) {
-      return 1;
-    }
-
-    return 0;
-  }
-
-  function normalizeGoalStatus(goal: FitnessGoal): FitnessGoal {
-    if (goal.current >= goal.target) {
-      return { ...goal, status: "Raggiunto" as GoalStatus };
-    }
-
-    if (isPastDue(goal.dueDate)) {
-      return { ...goal, status: "Fallito" as GoalStatus };
-    }
-
-    return goal;
-  }
-
-  function isPastDue(dueDate: string) {
-    return Boolean(dueDate) && dueDate < today();
   }
 
   async function duplicatePlan(plan: WorkoutPlan) {

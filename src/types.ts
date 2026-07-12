@@ -2,7 +2,15 @@ export type Difficulty = "Base" | "Intermedio" | "Avanzato";
 
 export type SessionStatus = "Da svolgere" | "Completata" | "Saltata";
 
-export type GoalStatus = "Aperto" | "Raggiunto" | "In pausa" | "Fallito";
+export type GoalStatus = "Aperto" | "Raggiunto" | "Fallito";
+
+export type GoalType =
+  | "Manuale"
+  | "Numero allenamenti"
+  | "Minuti totali"
+  | "Frequenza settimanale"
+  | "Carico su esercizio"
+  | "Completamento scheda";
 
 export type Exercise = {
   id: string;
@@ -79,6 +87,9 @@ export type FitnessGoal = {
   title: string;
   description: string;
   category: string;
+  goalType: GoalType;
+  linkedExerciseId?: string;
+  linkedPlanId?: string;
   target: number;
   current: number;
   startDate: string;

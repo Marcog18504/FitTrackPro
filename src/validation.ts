@@ -3,11 +3,12 @@ import {
   Exercise,
   FitnessData,
   FitnessGoal,
+  GoalType,
   PlannedSession,
   WorkoutLog,
   WorkoutPlan,
 } from "./types";
-import { muscleGroups } from "./constants";
+import { goalTypes, muscleGroups } from "./constants";
 
 type ValidationResult =
   | { ok: true; item: Exercise | WorkoutPlan | PlannedSession | WorkoutLog | FitnessGoal }
@@ -337,11 +338,15 @@ function validateWorkout(workout: WorkoutLog, data: FitnessData): ValidationResu
 }
 
 function validateGoal(goal: FitnessGoal, data: FitnessData): ValidationResult {
+  const goalType = goalTypes.includes(goal.goalType) ? goal.goalType : ("Manuale" as GoalType);
   const cleaned: FitnessGoal = {
     ...goal,
     title: cleanText(goal.title),
     description: cleanLongText(goal.description),
-    category: cleanText(goal.category),
+    category: goalType,
+    goalType,
+    linkedExerciseId: goalType === "Carico su esercizio" ? cleanText(goal.linkedExerciseId) : undefined,
+    linkedPlanId: goalType === "Completamento scheda" ? cleanText(goal.linkedPlanId) : undefined,
     startDate: cleanText(goal.startDate),
     dueDate: cleanText(goal.dueDate),
     notes: cleanLongText(goal.notes),
@@ -355,7 +360,13 @@ function validateGoal(goal: FitnessGoal, data: FitnessData): ValidationResult {
   if (hasDuplicate(data.goals, cleaned.id, (entry) => entry.title, cleaned.title)) {
     return fail("Esiste gia un obiettivo con questo titolo.");
   }
-  if (!isValidName(cleaned.category, 40)) return fail("La categoria deve essere un testo valido di massimo 40 caratteri.");
+  if (!goalTypes.includes(cleaned.goalType)) return fail("Seleziona una categoria obiettivo tra quelle disponibili.");
+  if (cleaned.goalType === "Carico su esercizio" && !data.exercises.some((exercise) => exercise.id === cleaned.linkedExerciseId)) {
+    return fail("Seleziona un esercizio esistente per l'obiettivo di carico.");
+  }
+  if (cleaned.goalType === "Completamento scheda" && !data.plans.some((plan) => plan.id === cleaned.linkedPlanId)) {
+    return fail("Seleziona una scheda esistente per l'obiettivo di completamento.");
+  }
   if (!isValidLongText(cleaned.description, 500, true)) return fail("Inserisci una descrizione valida di massimo 500 caratteri.");
   if (!Number.isFinite(cleaned.target) || cleaned.target <= 0 || cleaned.target > 1000000 || !hasAtMostTwoDecimals(cleaned.target)) {
     return fail("Il target deve essere maggiore di zero, non superiore a 1.000.000 e avere al massimo due decimali.");

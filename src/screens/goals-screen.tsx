@@ -1,6 +1,6 @@
 import { Text, View } from "react-native";
 import { CardActions, SearchAndFilter, SectionTitle } from "../components/common";
-import { goalStatuses } from "../constants";
+import { goalStatuses, goalTypes } from "../constants";
 import { styles } from "../styles";
 import { FitnessData, FitnessGoal, SelectedState } from "../types";
 import { progressPercent } from "../utils";
@@ -29,10 +29,9 @@ export function GoalsScreen({
   setSelected,
 }: GoalsScreenProps) {
   const items = data.goals.filter((goal) => {
-    const haystack = `${goal.title} ${goal.category} ${goal.status}`.toLowerCase();
-    return haystack.includes(query.toLowerCase()) && (filter === "Tutti" || goal.status === filter || goal.category === filter);
+    const haystack = `${goal.title} ${goal.category} ${goal.goalType} ${goal.status}`.toLowerCase();
+    return haystack.includes(query.toLowerCase()) && (filter === "Tutti" || goal.status === filter || goal.category === filter || goal.goalType === filter);
   });
-  const categories = Array.from(new Set(data.goals.map((goal) => goal.category)));
 
   return (
     <View style={styles.stack}>
@@ -44,7 +43,7 @@ export function GoalsScreen({
         setFilter={setFilter}
         sections={[
           { title: "Stato", options: goalStatuses },
-          { title: "Categoria", options: categories },
+          { title: "Categoria", options: goalTypes },
         ]}
       />
       {items.map((goal) => (

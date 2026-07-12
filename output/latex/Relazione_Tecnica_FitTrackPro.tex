@@ -60,7 +60,7 @@ La sezione \textbf{Sessioni} consente di pianificare allenamenti futuri. Una ses
 
 La sezione \textbf{Storico} consente di registrare gli allenamenti svolti. Ogni allenamento contiene titolo, data, scheda associata, giorno svolto, durata, carico opzionale per singolo esercizio, fatica percepita da 1 a 10 e note. Quando viene registrato un allenamento collegato a una sessione prevista nello stesso giorno, la sessione passa automaticamente da "Da svolgere" a "Completata". Lo storico mostra anche un confronto semplice con l'allenamento precedente, basato sulla differenza di durata.
 
-La sezione \textbf{Obiettivi} consente di creare, modificare, visualizzare ed eliminare obiettivi personali. Ogni obiettivo contiene titolo, descrizione, categoria, valore target, valore attuale, data di inizio, eventuale scadenza, stato e note. L'avanzamento viene mostrato tramite percentuale e barra di progresso. Quando il valore attuale raggiunge o supera il target, l'obiettivo viene considerato raggiunto. Se invece la data di fine viene superata senza raggiungere il target, l'obiettivo viene impostato come fallito. Gli obiettivi aperti collegati a minuti, durata, allenamenti o sessioni possono avanzare automaticamente quando viene registrato un nuovo allenamento; gli obiettivi falliti o non aperti non vengono incrementati.
+La sezione \textbf{Obiettivi} consente di creare, modificare, visualizzare ed eliminare obiettivi personali. Ogni obiettivo contiene titolo, descrizione, categoria, valore target, valore attuale, data di inizio, eventuale scadenza, stato e note. La categoria non e' un testo libero, ma una scelta controllata: manuale, numero allenamenti, minuti totali, frequenza settimanale, carico su esercizio o completamento scheda. L'avanzamento viene mostrato tramite percentuale e barra di progresso. Per gli obiettivi automatici il valore attuale viene calcolato dagli allenamenti salvati, dai carichi registrati o dalle schede collegate. Quando il valore attuale raggiunge o supera il target, l'obiettivo viene considerato raggiunto. Se invece la data di fine viene superata senza raggiungere il target, l'obiettivo viene impostato come fallito.
 
 La \textbf{Dashboard} mostra un riepilogo generale con numero di esercizi, numero di schede, sessioni nella settimana, allenamenti registrati, minuti totali di allenamento e obiettivi raggiunti. Include una card di ingresso rapido che propone la scheda programmata per oggi e apre direttamente la registrazione dell'allenamento. Mostra inoltre icone nei riquadri statistici, una riga di costanza settimanale colorata in base agli allenamenti registrati, la distribuzione compatta degli esercizi per gruppo muscolare e un timer di recupero.
 
@@ -137,6 +137,19 @@ FitTrackPro/
       detail-modal.tsx
       edit-modal.tsx
       form-controls.tsx
+      modals/
+        detail/
+          exercise-detail-modal.tsx
+          goal-detail-modal.tsx
+          plan-detail-modal.tsx
+          session-detail-modal.tsx
+          workout-detail-modal.tsx
+        edit/
+          exercise-edit-modal.tsx
+          goal-edit-modal.tsx
+          plan-edit-modal.tsx
+          session-edit-modal.tsx
+          workout-edit-modal.tsx
     screens/
       dashboard-screen.tsx
       exercises-screen.tsx
@@ -145,6 +158,7 @@ FitTrackPro/
       workouts-screen.tsx
       goals-screen.tsx
     constants.ts
+    goals.ts
     seed.ts
     storage.ts
     input-sanitizers.ts
@@ -168,7 +182,7 @@ Ogni sezione presenta un elenco di elementi e azioni coerenti:
   \item duplicazione dove prevista.
 \end{itemize}
 
-La visualizzazione del dettaglio e la modifica avvengono tramite modali. Questa scelta mantiene il flusso semplice: l'utente lavora sul dato rimanendo nel contesto della sezione corrente.
+La visualizzazione del dettaglio e la modifica avvengono tramite modali. Questa scelta mantiene il flusso semplice: l'utente lavora sul dato rimanendo nel contesto della sezione corrente. Dal punto di vista progettuale le modali sono organizzate per entita': esercizi, schede, sessioni, allenamenti e obiettivi hanno file separati per inserimento/modifica e per dettaglio. I file \texttt{edit-modal.tsx} e \texttt{detail-modal.tsx} restano come dispatcher leggeri, cioe' scelgono quale modale specifica aprire in base all'entita' selezionata.
 
 Schema sintetico della navigazione:
 
@@ -208,6 +222,7 @@ Il legame tra schede, sessioni, storico ed esercizi e' basato sugli identificati
   \item ogni esercizio del giorno contiene serie e ripetizioni;
   \item una sessione contiene \texttt{planId} e \texttt{planDayId};
   \item uno storico allenamento contiene \texttt{planId}, \texttt{planDayId} e carichi per singolo esercizio della scheda.
+  \item un obiettivo puo' contenere riferimenti opzionali a un esercizio o a una scheda, usati per calcolare obiettivi come carico su esercizio o completamento scheda.
 \end{itemize}
 
 Questa scelta evita di duplicare oggetti complessi e mantiene i dati piu' coerenti. Se il nome di un esercizio cambia, le schede continuano a riferirsi allo stesso esercizio tramite identificativo.
@@ -349,8 +364,11 @@ I componenti riutilizzabili sono nella cartella \texttt{src/components}:
 \begin{itemize}
   \item \texttt{common.tsx} contiene card, azioni, ricerca, filtri e statistiche;
   \item \texttt{form-controls.tsx} contiene campi input, chip e selettori e applica la sanitizzazione durante la digitazione;
-  \item \texttt{edit-modal.tsx} contiene la modale di inserimento e modifica;
-  \item \texttt{detail-modal.tsx} contiene la modale di dettaglio.
+  \item \texttt{edit-modal.tsx} contiene il dispatcher delle modali di inserimento e modifica;
+  \item \texttt{detail-modal.tsx} contiene il dispatcher delle modali di dettaglio;
+  \item \texttt{src/components/modals/edit} contiene una modale di modifica separata per ogni entita';
+  \item \texttt{src/components/modals/detail} contiene una modale di dettaglio separata per ogni entita' e un piccolo contenitore comune per overlay, scroll e pulsante di chiusura;
+  \item \texttt{goals.ts} contiene il calcolo centralizzato dello stato di avanzamento degli obiettivi.
 \end{itemize}
 
 Gli stili sono centralizzati in \texttt{src/styles.ts}, cosi' da mantenere coerenza visiva tra le sezioni.
@@ -374,9 +392,11 @@ Gli stati principali sono:
 
 \subsection{5.3 Inserimento, modifica e cancellazione}
 
-L'inserimento e la modifica avvengono tramite \texttt{EditModal}. La stessa modale viene riutilizzata per esercizi, schede, sessioni, allenamenti e obiettivi. In base al tipo di entita' vengono mostrati campi diversi.
+L'inserimento e la modifica avvengono tramite modali specifiche per entita'. \texttt{EditModal} riceve lo stato dell'elemento in modifica e delega a \texttt{ExerciseEditModal}, \texttt{PlanEditModal}, \texttt{SessionEditModal}, \texttt{WorkoutEditModal} o \texttt{GoalEditModal}. In questo modo ogni file contiene solo la logica del proprio form, mentre il flusso di apertura e salvataggio rimane centralizzato.
 
 La cancellazione richiede conferma. Su mobile viene usato \texttt{Alert}, mentre su web vengono usate le API native del browser tramite \texttt{globalThis.confirm}, cosi' da mantenere lo stesso comportamento anche quando l'app viene eseguita con Expo Web.
+
+La visualizzazione dei dettagli segue la stessa organizzazione: \texttt{DetailModal} delega a una modale specifica per l'entita' selezionata. Questa separazione rende il codice piu' leggibile e riduce il rischio che una modifica agli obiettivi interferisca con schede, esercizi o allenamenti.
 
 Il salvataggio passa dalla funzione di validazione centralizzata. Se il dato non e' valido, l'app mostra un messaggio di errore e mantiene aperta la modale, permettendo all'utente di correggere l'input. Anche in questo caso il messaggio e' gestito in modo compatibile con web e mobile.
 
@@ -446,9 +466,9 @@ Questi dati sono ricavati localmente dagli array salvati nell'app.
 
 \subsection{5.7 Aggiornamenti automatici tra entita'}
 
-Alcune azioni dell'utente aggiornano piu' entita' in modo coordinato. La registrazione di un allenamento puo' completare automaticamente la sessione pianificata corrispondente, quando data, scheda e giorno della scheda coincidono. Inoltre, se l'allenamento e' nuovo, gli obiettivi aperti legati a minuti, durata, allenamenti o sessioni vengono incrementati in base ai dati appena salvati.
+Alcune azioni dell'utente aggiornano piu' entita' in modo coordinato. La registrazione di un allenamento puo' completare automaticamente la sessione pianificata corrispondente, quando data, scheda e giorno della scheda coincidono. Inoltre gli obiettivi automatici vengono ricalcolati partendo dagli allenamenti salvati nel periodo definito da data di inizio e scadenza.
 
-Gli obiettivi vengono normalizzati sia al caricamento dei dati sia durante il salvataggio: se il valore attuale raggiunge il target diventano "Raggiunto"; se la data di fine e' passata e il target non e' stato raggiunto diventano "Fallito". Gli obiettivi falliti, raggiunti o in pausa non vengono avanzati automaticamente da nuovi allenamenti.
+Le categorie automatiche gestite sono: numero allenamenti, minuti totali, frequenza settimanale, carico su esercizio e completamento scheda. Gli obiettivi manuali restano aggiornabili dall'utente. Gli obiettivi vengono normalizzati sia al caricamento dei dati sia durante il salvataggio: se il valore attuale raggiunge il target diventano "Raggiunto"; se la data di fine e' passata e il target non e' stato raggiunto diventano "Fallito". Gli obiettivi falliti o raggiunti non vengono avanzati automaticamente da nuovi allenamenti.
 
 \section{6. Limitazioni note}
 
@@ -458,7 +478,7 @@ Le statistiche sono volutamente semplici: non includono grafici avanzati sull'an
 
 La pianificazione delle sessioni e' collegata alle schede e ai giorni della scheda. Questo rende i dati coerenti, ma limita la possibilita' di creare sessioni completamente libere senza scheda associata.
 
-Gli obiettivi possono avanzare automaticamente solo per categorie riconoscibili dal testo, ad esempio minuti, durata, allenamenti o sessioni. Obiettivi piu' specifici, come quelli basati su carichi o misure corporee, restano aggiornabili manualmente.
+Gli obiettivi automatici coprono le categorie principali previste dall'app: allenamenti, minuti, frequenza, carichi su esercizio e completamento scheda. Obiettivi non riconducibili a queste categorie, ad esempio misure corporee o valutazioni personali, restano gestibili tramite categoria manuale.
 
 \section{7. Istruzioni per l'esecuzione}
 
@@ -498,7 +518,7 @@ Durante il controllo finale sono state eseguite le seguenti verifiche:
   \item verifica Expo con \texttt{npx expo install --check};
   \item controllo dell'assenza di residui della precedente navigazione manuale;
   \item controllo dell'assenza di riferimenti a Expo Router, non usato nella versione finale;
-  \item controllo di tutti i 36 campi \texttt{Field}, ciascuno con una tipologia di input esplicita;
+  \item controllo dei campi \texttt{Field}, ciascuno con una tipologia di input esplicita;
   \item controllo dei soli due punti di creazione diretta di \texttt{TextInput}, entrambi protetti dalla sanitizzazione;
   \item generazione del bundle Android con \texttt{npx expo export --platform android}.
 \end{itemize}

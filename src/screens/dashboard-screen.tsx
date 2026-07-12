@@ -36,6 +36,11 @@ export function DashboardScreen({
   const visibleMuscles = muscleEntries.slice(0, 4);
   const hiddenMuscleCount = Math.max(0, muscleEntries.length - visibleMuscles.length);
 
+  function resetTimer() {
+    setTimerRunning(false);
+    setTimerSeconds(90);
+  }
+
   return (
     <View style={styles.stack}>
       <SectionTitle title="Riepilogo" actionLabel="Nuovo esercizio" onAction={onNewExercise} />
@@ -111,6 +116,9 @@ export function DashboardScreen({
           </Pressable>
           <Pressable style={styles.secondaryButton} onPress={() => setTimerSeconds(timerSeconds + 30)}>
             <Text style={styles.secondaryButtonText}>+30s</Text>
+          </Pressable>
+          <Pressable style={styles.secondaryButton} onPress={resetTimer}>
+            <Text style={styles.secondaryButtonText}>Reset</Text>
           </Pressable>
         </View>
       </View>
