@@ -1,15 +1,21 @@
+import { Dispatch, SetStateAction } from "react";
 import { Pressable, Text, View } from "react-native";
 import { SectionTitle, StatCard } from "../components/common";
 import { styles } from "../styles";
 import { FitnessData, FitnessStats } from "../types";
 import { formatTimer } from "../utils";
 
+const MIN_TIMER_SECONDS = 30;
+const DEFAULT_TIMER_SECONDS = 60;
+const LONG_TIMER_SECONDS = 180;
+const MAX_TIMER_SECONDS = 300;
+
 type DashboardScreenProps = {
   data: FitnessData;
   stats: FitnessStats;
   timerSeconds: number;
   timerRunning: boolean;
-  setTimerSeconds: (value: number) => void;
+  setTimerSeconds: Dispatch<SetStateAction<number>>;
   setTimerRunning: (value: boolean | ((current: boolean) => boolean)) => void;
   onNewExercise: () => void;
   onNewPlan: () => void;
@@ -38,7 +44,16 @@ export function DashboardScreen({
 
   function resetTimer() {
     setTimerRunning(false);
-    setTimerSeconds(90);
+    setTimerSeconds(DEFAULT_TIMER_SECONDS);
+  }
+
+  function setTimerPreset(seconds: number) {
+    setTimerRunning(false);
+    setTimerSeconds(clampTimerSeconds(seconds));
+  }
+
+  function adjustTimer(deltaSeconds: number) {
+    setTimerSeconds((current) => clampTimerSeconds(current + deltaSeconds));
   }
 
   return (
@@ -98,23 +113,20 @@ export function DashboardScreen({
           </Pressable>
           <Pressable
             style={styles.secondaryButton}
-            onPress={() => {
-              setTimerRunning(false);
-              setTimerSeconds(90);
-            }}
+            onPress={() => setTimerPreset(DEFAULT_TIMER_SECONDS)}
           >
-            <Text style={styles.secondaryButtonText}>1:30</Text>
+            <Text style={styles.secondaryButtonText}>1:00</Text>
           </Pressable>
           <Pressable
             style={styles.secondaryButton}
-            onPress={() => {
-              setTimerRunning(false);
-              setTimerSeconds(180);
-            }}
+            onPress={() => setTimerPreset(LONG_TIMER_SECONDS)}
           >
             <Text style={styles.secondaryButtonText}>3:00</Text>
           </Pressable>
-          <Pressable style={styles.secondaryButton} onPress={() => setTimerSeconds(timerSeconds + 30)}>
+          <Pressable style={styles.secondaryButton} onPress={() => adjustTimer(-30)}>
+            <Text style={styles.secondaryButtonText}>-30s</Text>
+          </Pressable>
+          <Pressable style={styles.secondaryButton} onPress={() => adjustTimer(30)}>
             <Text style={styles.secondaryButtonText}>+30s</Text>
           </Pressable>
           <Pressable style={styles.secondaryButton} onPress={resetTimer}>
@@ -138,6 +150,10 @@ export function DashboardScreen({
       </View>
     </View>
   );
+}
+
+function clampTimerSeconds(seconds: number) {
+  return Math.min(MAX_TIMER_SECONDS, Math.max(MIN_TIMER_SECONDS, seconds));
 }
 
 function getTodayKey() {

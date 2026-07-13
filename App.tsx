@@ -70,7 +70,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<EditingState>(null);
   const [selected, setSelected] = useState<SelectedState>(null);
-  const [timerSeconds, setTimerSeconds] = useState(90);
+  const [timerSeconds, setTimerSeconds] = useState(60);
   const [timerRunning, setTimerRunning] = useState(false);
 
   useEffect(() => {

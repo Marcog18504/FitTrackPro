@@ -9,12 +9,13 @@ import {
   WorkoutPlan,
 } from "./types";
 import { goalTypes, muscleGroups } from "./constants";
+import { today } from "./utils";
 
 type ValidationResult =
   | { ok: true; item: Exercise | WorkoutPlan | PlannedSession | WorkoutLog | FitnessGoal }
   | { ok: false; message: string };
 
-const namePattern = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9][A-Za-zÀ-ÖØ-öø-ÿ0-9 '\-]*$/;
+const namePattern = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9][A-Za-zÀ-ÖØ-öø-ÿ0-9 '\-/]*$/;
 const listPattern = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9][A-Za-zÀ-ÖØ-öø-ÿ0-9 ,'\-/]*$/;
 const shortTextPattern = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9][A-Za-zÀ-ÖØ-öø-ÿ0-9 .,;:'()/%+\-]*$/;
 const invalidControlCharacters = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/;
@@ -145,7 +146,7 @@ function validateExercise(exercise: Exercise, data: FitnessData): ValidationResu
   };
 
   if (!isValidName(cleaned.name, 60)) {
-    return fail("Il nome dell'esercizio deve contenere da 1 a 60 caratteri tra lettere, numeri, spazi, apostrofo e trattino.");
+    return fail("Il nome dell'esercizio deve contenere da 1 a 60 caratteri tra lettere, numeri, spazi, apostrofo, trattino e slash.");
   }
   if (hasDuplicate(data.exercises, cleaned.id, (entry) => entry.name, cleaned.name)) {
     return fail("Esiste gia un esercizio con questo nome.");
@@ -207,7 +208,7 @@ function validatePlan(plan: WorkoutPlan, data: FitnessData): ValidationResult {
   };
 
   if (!isValidName(cleaned.name, 60)) {
-    return fail("Il nome della scheda deve contenere da 1 a 60 caratteri tra lettere, numeri, spazi, apostrofo e trattino.");
+    return fail("Il nome della scheda deve contenere da 1 a 60 caratteri tra lettere, numeri, spazi, apostrofo, trattino e slash.");
   }
   if (hasDuplicate(data.plans, cleaned.id, (entry) => entry.name, cleaned.name)) {
     return fail("Esiste gia una scheda con questo nome.");
@@ -264,9 +265,10 @@ function validateSession(session: PlannedSession, data: FitnessData): Validation
   };
 
   if (!isValidName(cleaned.title, 60)) {
-    return fail("Il titolo della sessione deve contenere da 1 a 60 caratteri tra lettere, numeri, spazi, apostrofo e trattino.");
+    return fail("Il titolo della sessione deve contenere da 1 a 60 caratteri tra lettere, numeri, spazi, apostrofo, trattino e slash.");
   }
   if (!isValidDate(cleaned.date)) return fail("La data della sessione deve essere reale e nel formato YYYY-MM-DD.");
+  if (cleaned.date < today()) return fail("La sessione deve essere pianificata da oggi in poi: non puoi usare una data passata.");
   if (!isValidName(cleaned.type, 40)) return fail("Il tipo di sessione deve essere un testo valido di massimo 40 caratteri.");
   if (
     data.sessions.some(
@@ -306,9 +308,10 @@ function validateWorkout(workout: WorkoutLog, data: FitnessData): ValidationResu
   };
 
   if (!isValidName(cleaned.title, 60)) {
-    return fail("Il titolo dell'allenamento deve contenere da 1 a 60 caratteri tra lettere, numeri, spazi, apostrofo e trattino.");
+    return fail("Il titolo dell'allenamento deve contenere da 1 a 60 caratteri tra lettere, numeri, spazi, apostrofo, trattino e slash.");
   }
   if (!isValidDate(cleaned.date)) return fail("La data dell'allenamento deve essere reale e nel formato YYYY-MM-DD.");
+  if (cleaned.date > today()) return fail("L'allenamento registrato non puo avere una data futura.");
   if (
     data.workouts.some(
       (entry) =>
@@ -355,7 +358,7 @@ function validateGoal(goal: FitnessGoal, data: FitnessData): ValidationResult {
   };
 
   if (!isValidName(cleaned.title, 60)) {
-    return fail("Il titolo dell'obiettivo deve contenere da 1 a 60 caratteri tra lettere, numeri, spazi, apostrofo e trattino.");
+    return fail("Il titolo dell'obiettivo deve contenere da 1 a 60 caratteri tra lettere, numeri, spazi, apostrofo, trattino e slash.");
   }
   if (hasDuplicate(data.goals, cleaned.id, (entry) => entry.title, cleaned.title)) {
     return fail("Esiste gia un obiettivo con questo titolo.");
