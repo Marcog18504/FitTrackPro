@@ -3,14 +3,16 @@ import { FitnessData } from "./types";
 import { seedData } from "./seed";
 import { makeId } from "./utils";
 import { muscleGroups } from "./constants";
+import { refreshGoals } from "./goals";
 
 const STORAGE_KEY = "fittrackpro:data:v1";
 
 export async function loadFitnessData(): Promise<FitnessData> {
   const raw = await AsyncStorage.getItem(STORAGE_KEY);
   if (!raw) {
-    await saveFitnessData(seedData);
-    return seedData;
+    const normalizedSeed = normalizeFitnessData(seedData);
+    await saveFitnessData(normalizedSeed);
+    return normalizedSeed;
   }
 
   const parsed = JSON.parse(raw) as FitnessData;
@@ -24,11 +26,26 @@ export async function saveFitnessData(data: FitnessData) {
 }
 
 export async function resetFitnessData() {
-  await saveFitnessData(seedData);
-  return seedData;
+  const normalizedSeed = normalizeFitnessData(seedData);
+  await saveFitnessData(normalizedSeed);
+  return normalizedSeed;
 }
 
 function normalizeFitnessData(data: FitnessData): FitnessData {
+  const exercises = data.exercises.map((exercise) => {
+    const legacy = exercise as typeof exercise & { recommended?: string };
+    const extracted = extractNumbers(legacy.recommended ?? "");
+    const primaryMuscle = normalizeMuscleGroup(exercise.primaryMuscle);
+    return {
+      ...exercise,
+      primaryMuscle,
+      secondaryMuscles: normalizeSecondaryMuscles(exercise.secondaryMuscles, primaryMuscle),
+      recommendedSets: safeNumber(exercise.recommendedSets, extracted[0] ?? 3),
+      recommendedReps: safeNumber(exercise.recommendedReps, extracted[1] ?? 10),
+      estimatedDurationMinutes: safeNumber(exercise.estimatedDurationMinutes, 5),
+    };
+  });
+
   const plans = data.plans.map((plan) => {
     const legacy = plan as typeof plan & { duration?: string; frequency?: string };
     const legacyExerciseIds = plan.exerciseIds ?? [];
@@ -60,54 +77,49 @@ function normalizeFitnessData(data: FitnessData): FitnessData {
     };
   });
 
-  return {
+  const sessions = data.sessions.map((session) => {
+    const plan = plans.find((entry) => entry.id === session.planId);
+    const existingDay = plan?.days.find((day) => day.id === session.planDayId);
+    const selectedDay = existingDay ?? plan?.days[0];
+
+    return {
+      ...session,
+      planDayId: selectedDay?.id ?? session.planDayId,
+      exerciseIds: selectedDay ? Array.from(new Set(selectedDay.items.map((item) => item.exerciseId))) : (session.exerciseIds ?? []),
+    };
+  });
+
+  const workouts = data.workouts.map((workout) => {
+    const legacyWorkout = workout as typeof workout & { loadKg?: number };
+    const plan = plans.find((entry) => entry.id === workout.planId);
+    const existingDay = plan?.days.find((day) => day.id === workout.planDayId);
+    const selectedDay = existingDay ?? plan?.days[0];
+    const existingLoads = new Map((workout.exerciseLoads ?? []).map((entry) => [entry.planItemId, Number(entry.loadKg)]));
+
+    return {
+      ...workout,
+      planDayId: selectedDay?.id ?? workout.planDayId,
+      exerciseLoads:
+        selectedDay?.items.map((item) => ({
+          planItemId: item.id,
+          loadKg: safeNumber(existingLoads.get(item.id), 0),
+        })) ??
+        (Number.isFinite(Number(legacyWorkout.loadKg)) && Number(legacyWorkout.loadKg) > 0
+          ? [{ planItemId: "legacy", loadKg: Number(legacyWorkout.loadKg) }]
+          : []),
+    };
+  });
+
+  const normalizedData = {
     ...data,
-    exercises: data.exercises.map((exercise) => {
-      const legacy = exercise as typeof exercise & { recommended?: string };
-      const extracted = extractNumbers(legacy.recommended ?? "");
-      const primaryMuscle = normalizeMuscleGroup(exercise.primaryMuscle);
-      return {
-        ...exercise,
-        primaryMuscle,
-        secondaryMuscles: normalizeSecondaryMuscles(exercise.secondaryMuscles, primaryMuscle),
-        recommendedSets: safeNumber(exercise.recommendedSets, extracted[0] ?? 3),
-        recommendedReps: safeNumber(exercise.recommendedReps, extracted[1] ?? 10),
-        estimatedDurationMinutes: safeNumber(exercise.estimatedDurationMinutes, 5),
-      };
-    }),
+    exercises,
     plans,
-    sessions: data.sessions.map((session) => {
-      const plan = plans.find((entry) => entry.id === session.planId);
-      const existingDay = plan?.days.find((day) => day.id === session.planDayId);
-      const selectedDay = existingDay ?? plan?.days[0];
-
-      return {
-        ...session,
-        planDayId: selectedDay?.id ?? session.planDayId,
-        exerciseIds: selectedDay ? Array.from(new Set(selectedDay.items.map((item) => item.exerciseId))) : (session.exerciseIds ?? []),
-      };
-    }),
-    workouts: data.workouts.map((workout) => {
-      const legacyWorkout = workout as typeof workout & { loadKg?: number };
-      const plan = plans.find((entry) => entry.id === workout.planId);
-      const existingDay = plan?.days.find((day) => day.id === workout.planDayId);
-      const selectedDay = existingDay ?? plan?.days[0];
-      const existingLoads = new Map((workout.exerciseLoads ?? []).map((entry) => [entry.planItemId, Number(entry.loadKg)]));
-
-      return {
-        ...workout,
-        planDayId: selectedDay?.id ?? workout.planDayId,
-        exerciseLoads:
-          selectedDay?.items.map((item) => ({
-            planItemId: item.id,
-            loadKg: safeNumber(existingLoads.get(item.id), 0),
-          })) ??
-          (Number.isFinite(Number(legacyWorkout.loadKg)) && Number(legacyWorkout.loadKg) > 0
-            ? [{ planItemId: "legacy", loadKg: Number(legacyWorkout.loadKg) }]
-            : []),
-      };
-    }),
+    sessions,
+    workouts,
+    goals: data.goals,
   };
+
+  return { ...normalizedData, goals: refreshGoals(normalizedData) };
 }
 
 function safeNumber(value: unknown, fallback: number) {

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
 import { Modal, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { sanitizeInput } from "../input-sanitizers";
 import { styles } from "../styles";
@@ -165,10 +166,23 @@ export function CardActions({ onOpen, onEdit, onDelete, onDuplicate }: CardActio
   );
 }
 
-export function StatCard({ label, value }: { label: string; value: string | number }) {
+type StatCardProps = {
+  label: string;
+  value: string | number;
+  icon?: keyof typeof Ionicons.glyphMap;
+};
+
+export function StatCard({ label, value, icon }: StatCardProps) {
   return (
     <View style={styles.statCard}>
-      <Text style={styles.statValue}>{value}</Text>
+      <View style={styles.statCardTop}>
+        <Text style={styles.statValue}>{value}</Text>
+        {icon ? (
+          <View style={styles.statIconBox}>
+            <Ionicons name={icon} size={18} color="#123C2D" />
+          </View>
+        ) : null}
+      </View>
       <Text style={styles.muted}>{label}</Text>
     </View>
   );

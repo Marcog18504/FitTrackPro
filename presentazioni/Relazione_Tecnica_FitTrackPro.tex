@@ -1,0 +1,686 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage[protrusion=true,expansion=false]{microtype} % Migliora il riempimento delle righe ed evita micro-scompaginazioni
+\usepackage{beramono}  % Font monospace più elegante e compatto per i codici
+\usepackage{tikz}
+
+\geometry{margin=2.2cm}
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue, citecolor=black}
+\setlength{\parskip}{0.55em}
+\setlength{\parindent}{0pt}
+
+% Configurazione avanzata ed elegante per listings
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{gray!4},
+    rulecolor=\color{gray!30},
+    frameround=tttt,
+    framesep=6pt,
+    belowskip=1em,
+    aboveskip=1em
+}
+
+
+
+
+
+
+
+
+
+
+\begin{document}
+
+
+\begin{titlepage}
+    \begin{center}
+        % Logo Università ingrandito e centrato correttamente
+        \begin{tikzpicture}[remember picture, overlay]
+            \node [anchor=north, inner sep=25pt] at (current page.north)
+            {
+                \includegraphics[height=4.8cm]{screenshots/logo.png} 
+            };
+        \end{tikzpicture}
+        
+        \vspace*{3.8cm} % Spazio calibrato per l'ingombro del logo
+        
+        {\Large \textbf{Università degli Studi di Salerno}} \\[0.25cm]
+        {\normalsize \textbf{Dipartimento di Ingegneria dell'Informazione ed Elettrica e Matematica applicata}} \\[0.15cm]
+        {\large Corso di Laurea Triennale in Ingegneria Informatica} \\
+        
+        \vspace{\fill} 
+        
+        % Titolo Principale ingrandito e centrato con i dati del tuo progetto
+        {\Huge \textbf{Relazione Tecnica d'Esame}} \\[0.6cm]
+        {\LARGE \textbf{FitTrackPro: Local Fitness Tracker}} \\
+        
+        \vspace{\fill} 
+        
+        {\large \textbf{Luglio 2026}} \\
+    \end{center}
+
+    \vspace{\fill} 
+
+    \begin{flushright}
+        \linespread{1.2}\selectfont % Distanza tra i nomi ottimizzata per la leggibilità
+        {\large \textbf{Studenti (Gruppo 3):}} \\[0.25cm]
+        \begin{tabular}{rl}
+            \large Marco Giraulo & \large Mat. 0612708887 \\
+            \large Carmine Giudice & \large Mat. 0612709167 \\
+            \large Luca Migliaccio & \large Mat. 0612709613 \\
+            \large Fabio Concilio & \large Mat. 0612708899 \\
+            \large Francesco Mastrogiacomo & \large Mat. 0612708900 \\
+        \end{tabular}
+    \end{flushright}
+
+    \vspace{\fill} 
+
+    \begin{center}
+        {\large \textbf{Anno Accademico 2025/2026}}
+    \end{center}
+\end{titlepage}
+
+\newpage
+% Da qui in poi prosegue il tuo documento (Indice o Introduzione)
+
+% --- PAGINA 2: Indice ---
+\newpage
+\tableofcontents
+\newpage
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{ Descrizione dell'app}
+
+FitTrackPro è un'app mobile sviluppata in React Native con Expo. L'obiettivo dell'app è aiutare l'utente a organizzare la propria attività fisica attraverso la gestione di esercizi, schede di allenamento, sessioni pianificate, allenamenti svolti e obiettivi personali.
+
+L'app è pensata per utenti che si allenano in autonomia e vogliono uno strumento semplice per pianificare gli allenamenti, registrare ciò che è stato svolto e controllare i progressi nel tempo. Non è progettata come piattaforma professionale per personal trainer o palestre, ma come tracker personale locale, utilizzabile anche senza connessione a Internet.
+
+Il problema principale affrontato è la frammentazione delle informazioni relative all'allenamento. Molto spesso esercizi, schede, sessioni e progressi vengono salvati in note separate o in modo poco strutturato. FitTrackPro raccoglie questi dati in sezioni coerenti e permette all'utente di consultarli, modificarli e collegarli tra loro.
+
+Gli scenari d'uso principali sono:
+
+\begin{itemize}
+  \item creare un archivio personale di esercizi;
+  \item costruire schede di allenamento divise per giorni;
+  \item associare a ogni giorno esercizi, serie e ripetizioni;
+  \item pianificare sessioni future partendo da una scheda;
+  \item indicare se una sessione è da svolgere, completata o saltata;
+  \item registrare gli allenamenti effettivamente svolti;
+  \item salvare il carico usato per i singoli esercizi;
+  \item creare obiettivi personali e seguirne l'avanzamento;
+  \item registrare rapidamente l'allenamento previsto per il giorno corrente;
+  \item consultare una dashboard con riepiloghi, costanza settimanale e timer di recupero.
+\end{itemize}
+
+\section{Requisiti}
+
+\subsection{Funzionalità implementate}
+
+FitTrackPro implementa le principali funzionalità richieste dalla traccia progettuale.
+
+La sezione \textbf{Esercizi} permette di visualizzare l'elenco degli esercizi, consultare il dettaglio, aggiungere nuovi esercizi, modificarli ed eliminarli. Per ogni esercizio vengono gestiti nome, descrizione, gruppo muscolare principale, gruppi secondari, difficoltà, attrezzatura, serie consigliate, ripetizioni consigliate, durata stimata e note. Il gruppo muscolare principale e i gruppi secondari vengono scelti da liste controllate, così da evitare valori incoerenti o scritti in modo diverso.
+
+La sezione \textbf{Schede} permette di creare, modificare, eliminare e duplicare schede di allenamento. Ogni scheda contiene nome, descrizione, obiettivo, livello, durata prevista, frequenza settimanale, recupero generale, note e una programmazione divisa per giorni. Ogni giorno contiene esercizi collegati all'archivio, con serie e ripetizioni specifiche.
+
+La sezione \textbf{Sessioni} consente di pianificare allenamenti futuri. Una sessione contiene titolo, data, tipo, scheda associata, giorno della scheda, stato e note. Gli esercizi della sessione non vengono inseriti manualmente: sono ricavati automaticamente dal giorno scelto nella scheda. Questa scelta rende la pianificazione più coerente, perché una sessione collegata a una scheda eredita il programma previsto.
+
+La sezione \textbf{Storico} consente di registrare gli allenamenti svolti. Ogni allenamento contiene titolo, data, scheda associata, giorno svolto, durata, carico opzionale per singolo esercizio, fatica percepita da 1 a 10 e note. Quando viene registrato un allenamento collegato a una sessione prevista nello stesso giorno, la sessione passa automaticamente da "Da svolgere" a "Completata". Lo storico mostra anche un confronto semplice con l'allenamento precedente, basato sulla differenza di durata.
+
+La sezione \textbf{Obiettivi} consente di creare, modificare, visualizzare ed eliminare obiettivi personali. Ogni obiettivo contiene titolo, descrizione, categoria, valore target, valore attuale, data di inizio, eventuale scadenza, stato e note. La categoria non è un testo libero, ma una scelta controllata: manuale, numero allenamenti, minuti totali, frequenza settimanale, carico su esercizio o completamento scheda. L'avanzamento viene mostrato tramite percentuale e barra di progresso. Per gli obiettivi automatici il valore attuale viene calcolato dagli allenamenti salvati, dai carichi registrati o dalle schede collegate. Quando il valore attuale raggiunge o supera il target, l'obiettivo viene considerato raggiunto. Se invece la data di fine viene superata senza raggiungere il target, l'obiettivo viene impostato come fallito.
+
+La \textbf{Dashboard} mostra un riepilogo generale con numero di esercizi, numero di schede, sessioni nella settimana, allenamenti registrati, minuti totali di allenamento e obiettivi raggiunti. Include una card di ingresso rapido che propone la scheda programmata per oggi e apre direttamente la registrazione dell'allenamento. Mostra inoltre icone nei riquadri statistici, una riga di costanza settimanale colorata in base agli allenamenti registrati, la distribuzione compatta degli esercizi per gruppo muscolare e un timer di recupero.
+
+\subsection{Ricerca, filtri e organizzazione}
+
+Sono state implementate funzioni di ricerca e filtro in più sezioni:
+
+\begin{itemize}
+  \item ricerca degli esercizi per nome;
+  \item filtro degli esercizi per gruppo muscolare o difficoltà;
+  \item ricerca delle schede per nome, obiettivo o livello;
+  \item filtro delle schede per obiettivo o livello;
+  \item ricerca delle sessioni per titolo, data, tipo, stato, scheda, giorno o esercizi;
+  \item filtro delle sessioni per stato o tipo;
+  \item ricerca nello storico allenamenti per titolo, data, note, scheda, giorno o esercizi;
+  \item ricerca degli obiettivi per titolo, categoria o stato;
+  \item filtro degli obiettivi per categoria o stato.
+\end{itemize}
+
+I filtri sono organizzati in una finestra dedicata con sezioni separate. Quando un filtro è attivo, l'app lo mostra esplicitamente all'utente.
+
+\subsection{Feature avanzate implementate}
+
+Sono state implementate due feature avanzate principali.
+
+La prima è il \textbf{timer di recupero}, presente nella dashboard. L'utente può avviare o mettere in pausa il timer, scegliere rapidamente durate predefinite di 1:00 e 3:00 minuti, aumentare il tempo con il pulsante \texttt{+30s} e diminuirlo con il pulsante \texttt{-30s}. Il timer è vincolato a un minimo di 30 secondi e a un massimo di 5 minuti, così da evitare valori non realistici o incrementi illimitati. La funzione è coerente con il dominio dell'app, perché il recupero tra le serie è una parte importante dell'allenamento.
+
+La seconda è la \textbf{duplicazione di schede e sessioni}. L'utente può duplicare una scheda o una sessione esistente per creare rapidamente una variante. Il sistema genera nuovi identificativi e assegna un nome non duplicato, ad esempio aggiungendo "copia" o "copia 2".
+
+Sono state inoltre implementate validazioni robuste sui dati, tramite l'utilizzo di Regex, migrazioni per dati salvati con versioni precedenti, inserimento automatico dei trattini nelle date, vincoli temporali per sessioni e allenamenti, conferme compatibili anche con la versione web e aggiornamenti automatici tra storico, sessioni e obiettivi.
+
+\subsection{Funzionalità considerate ma non implementate}
+
+Sono state considerate alcune funzionalità ulteriori, ma non inserite nella versione attuale:
+
+\begin{itemize}
+  \item grafici avanzati sull'andamento dei carichi;
+  \item calendario mensile completo;
+  \item notifiche locali per ricordare le sessioni pianificate;
+  \item autenticazione utente;
+  \item sincronizzazione online;
+  \item backend remoto;
+  \item esportazione dei dati.
+\end{itemize}
+
+Queste funzionalità richiederebbero librerie aggiuntive o un'infrastruttura più complessa. Per questa versione si è scelto di mantenere l'app locale, stabile e coerente con i requisiti principali.
+
+\section{Progettazione dell'app}
+
+\subsection{Struttura generale}
+
+L'app è organizzata in sei sezioni principali:
+
+\begin{itemize}
+  \item Dashboard;
+  \item Esercizi;
+  \item Schede;
+  \item Sessioni;
+  \item Storico;
+  \item Obiettivi.
+\end{itemize}
+
+La navigazione è gestita con React Navigation. Il progetto usa un \texttt{NavigationContainer}, uno Stack Navigator principale e un Bottom Tab Navigator per le sezioni dell'app. Questa scelta rispetta il vincolo della traccia sulla navigazione tra più schermate e rende la struttura più vicina a quella di una vera applicazione mobile.
+
+La struttura principale del progetto è:
+
+\begin{lstlisting}
+FitTrackPro/
+  App.tsx
+  index.ts
+  src/
+    components/
+      common.tsx
+      detail-modal.tsx
+      edit-modal.tsx
+      form-controls.tsx
+      modals/
+        detail/
+          exercise-detail-modal.tsx
+          goal-detail-modal.tsx
+          plan-detail-modal.tsx
+          session-detail-modal.tsx
+          workout-detail-modal.tsx
+        edit/
+          exercise-edit-modal.tsx
+          goal-edit-modal.tsx
+          plan-edit-modal.tsx
+          session-edit-modal.tsx
+          workout-edit-modal.tsx
+    screens/
+      dashboard-screen.tsx
+      exercises-screen.tsx
+      plans-screen.tsx
+      sessions-screen.tsx
+      workouts-screen.tsx
+      goals-screen.tsx
+    constants.ts
+    goals.ts
+    seed.ts
+    storage.ts
+    input-sanitizers.ts
+    styles.ts
+    types.ts
+    utils.ts
+    validation.ts
+\end{lstlisting}
+
+\subsection{Schermate principali e flusso di navigazione}
+
+Il flusso principale parte dalla dashboard. L'utente può poi spostarsi tra le sezioni tramite la barra di navigazione inferiore.
+
+Ogni sezione presenta un elenco di elementi e azioni coerenti:
+
+\begin{itemize}
+  \item visualizzazione del dettaglio;
+  \item creazione di un nuovo elemento;
+  \item modifica di un elemento esistente;
+  \item eliminazione con conferma;
+  \item duplicazione dove prevista.
+\end{itemize}
+
+La visualizzazione del dettaglio e la modifica avvengono tramite modali. Questa scelta mantiene il flusso semplice: l'utente lavora sul dato rimanendo nel contesto della sezione corrente. Dal punto di vista progettuale le modali sono organizzate per entità: esercizi, schede, sessioni, allenamenti e obiettivi hanno file separati per inserimento/modifica e per dettaglio. I file \texttt{edit-modal.tsx} e \texttt{detail-modal.tsx} restano come dispatcher leggeri, cioè scelgono quale modale specifica aprire in base all'entità selezionata.
+
+Schema sintetico della navigazione:
+
+\begin{lstlisting}
+App
+  NavigationContainer
+    Stack Navigator
+      MainTabs
+        Dashboard
+        Esercizi
+        Schede
+        Sessioni
+        Storico
+        Obiettivi
+\end{lstlisting}
+
+
+La navigazione dell'app non consiste soltanto nel passaggio tra le diverse sezioni tramite la barra inferiore, ma integra anche un flusso di interazione tra le varie funzionalità. Le schermate condividono infatti lo stesso stato principale dell'applicazione e le operazioni eseguite in una sezione possono produrre aggiornamenti immediatamente visibili anche nelle altre.
+
+I principali flussi di navigazione sono i seguenti:
+
+\begin{itemize}
+
+\item \textbf{Accesso rapido dalla Dashboard.} La Dashboard rappresenta il punto di ingresso principale dell'app. Quando è presente una sessione pianificata per la giornata corrente, viene mostrata una card dedicata che consente di aprire direttamente la registrazione dell'allenamento. I dati della scheda selezionata, come esercizi, serie e ripetizioni, vengono precompilati automaticamente, evitando all'utente di reinserirli manualmente.
+
+\item \textbf{Gestione delle modali.} Le operazioni di inserimento, modifica e visualizzazione dei dettagli vengono eseguite tramite modali che si sovrappongono temporaneamente alla schermata corrente. Al termine dell'operazione, oppure in seguito alla chiusura della finestra, la modale viene rimossa e l'utente ritorna automaticamente alla schermata precedente, che mostra immediatamente i dati aggiornati.
+
+\item \textbf{Aggiornamento condiviso dei dati.} Lo stato principale dell'applicazione è gestito centralmente in \texttt{App.tsx}, mentre le schermate ricevono dati e funzioni tramite proprietà (props). Quando viene eseguita un'operazione, ad esempio la registrazione di un allenamento, la relativa callback aggiorna lo stato centrale. Di conseguenza tutte le schermate interessate vengono aggiornate automaticamente, consentendo ad esempio di visualizzare nella Dashboard le nuove statistiche e nella sezione Obiettivi l'eventuale avanzamento dei progressi.
+
+\end{itemize}
+\subsection{Organizzazione dei dati}
+
+I tipi principali sono definiti in \texttt{src/types.ts}. Le entità gestite sono:
+
+\begin{itemize}
+  \item \texttt{Exercise};
+  \item \texttt{WorkoutPlan};
+  \item \texttt{WorkoutPlanDay};
+  \item \texttt{PlannedSession};
+  \item \texttt{WorkoutLog};
+  \item \texttt{FitnessGoal}.
+\end{itemize}
+
+Tutti i dati sono raccolti nel tipo \texttt{FitnessData}, che contiene gli array delle entità. Ogni elemento ha un campo \texttt{id}, usato per modifica, eliminazione e collegamento con altri dati.
+
+Il legame tra schede, sessioni, storico ed esercizi è basato sugli identificativi:
+
+\begin{itemize}
+  \item una scheda contiene più giorni di allenamento;
+  \item ogni giorno contiene esercizi collegati tramite \texttt{exerciseId};
+  \item ogni esercizio del giorno contiene serie e ripetizioni;
+  \item una sessione contiene \texttt{planId} e \texttt{planDayId};
+  \item uno storico allenamento contiene \texttt{planId}, \texttt{planDayId} e carichi per singolo esercizio della scheda.
+  \item un obiettivo può contenere riferimenti opzionali a un esercizio o a una scheda, usati per calcolare obiettivi come carico su esercizio o completamento scheda.
+\end{itemize}
+
+Questa scelta evita di duplicare oggetti complessi e mantiene i dati più coerenti. Se il nome di un esercizio cambia, le schede continuano a riferirsi allo stesso esercizio tramite identificativo.
+
+\newpage
+\subsection{Mockup e schermate dell'interfaccia}
+
+Per documentare l'interfaccia sono stati inseriti screenshot delle schermate principali dell'app. Gli screenshot non rappresentano wireframe preliminari, ma mockup dell'interfaccia finale: mostrano quindi il risultato effettivo dell'implementazione e aiutano a comprendere la disposizione dei contenuti, la navigazione e le principali azioni disponibili.
+
+Oltre alle schermate interne, sono stati personalizzati anche gli asset grafici di avvio dell'applicazione: icona principale, splash screen, icona adattiva Android, versione monocromatica e favicon web. Questa scelta elimina gli asset predefiniti di Expo e rende l'app più riconoscibile come prodotto autonomo.
+
+Le schermate incluse sono:
+
+\begin{itemize}
+  \item dashboard principale, con ingresso rapido all'allenamento, riepiloghi, costanza settimanale e timer di recupero;
+  \item elenco esercizi, con card, ricerca, filtri e azioni disponibili;
+  \item modale di aggiunta esercizio, con campi controllati e selettori;
+  \item sezione schede, con elenco delle schede di allenamento;
+  \item sezione sessioni, dedicata alla pianificazione degli allenamenti;
+  \item storico allenamenti, con riepilogo degli allenamenti svolti;
+  \item sezione obiettivi, con stato di avanzamento e barra di progresso.
+\end{itemize}
+
+% Impaginazione a griglia per ottimizzare lo spazio visivo dei mockup
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.48\textwidth]{\detokenize{screenshots/dashboard.jpeg}}
+  \caption{Dashboard principale}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{\detokenize{screenshots/schermata_esercizi.jpeg}}
+    \caption{Elenco esercizi}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{\detokenize{screenshots/schermata_aggiunta_esercizio.jpeg}}
+    \caption{Aggiunta esercizio}
+  \end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{\detokenize{screenshots/schermata_schede.jpeg}}
+    \caption{Schede di allenamento}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{\detokenize{screenshots/schermata_sessioni.jpeg}}
+    \caption{Sessioni pianificate}
+  \end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{\detokenize{screenshots/schermata_storico.jpeg}}
+    \caption{Storico allenamenti}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{\detokenize{screenshots/schermata_obiettivi.jpeg}}
+    \caption{Obiettivi personali}
+  \end{minipage}
+\end{figure}
+
+\newpage
+\section{ Scelte tecnologiche}
+
+\subsection{ Framework utilizzato}
+
+L'app è stata sviluppata con React Native tramite Expo. Le versioni principali, lette dal file \texttt{package.json}, sono:
+
+\begin{itemize}
+  \item Expo SDK 54 (\texttt{expo} \textasciitilde54.0.0);
+  \item React Native 0.81.5;
+  \item React 19.1.0;
+  \item React DOM 19.1.0;
+  \item TypeScript 5.9.2.
+\end{itemize}
+
+Expo è stato scelto per semplificare sviluppo, avvio e test su dispositivo fisico tramite Expo Go o su emulatore.
+
+\subsection{Librerie principali}
+
+Le dipendenze principali sono:
+
+\begin{itemize}
+  \item \texttt{expo};
+  \item \texttt{react} 19.2.3;
+  \item \texttt{react-dom} 19.1.0;
+  \item \texttt{react-native} 0.85.3;
+  \item \texttt{react-native-web} 0.21.0;
+  \item \texttt{expo-status-bar} 3.0.9;
+  \item \texttt{@react-navigation/native} 7.0.0;
+  \item \texttt{@react-navigation/native-stack} 7.0.0;
+  \item \texttt{@react-navigation/bottom-tabs} 7.0.0;
+  \item \texttt{@react-native-async-storage/async-storage} 2.2.0;
+  \item \texttt{@expo/vector-icons} 15.0.2;
+  \item \texttt{react-native-screens} 4.16.0;
+  \item \texttt{react-native-safe-area-context} 5.6.0.
+\end{itemize}
+
+React Navigation gestisce il passaggio tra schermate. AsyncStorage gestisce la persistenza locale. \texttt{@expo/vector-icons} viene usata per rendere più chiara la barra di navigazione inferiore tramite icone associate alle singole sezioni. Non sono usate API remote o backend, perché la traccia non li richiede.
+
+\subsection{Persistenza locale}
+
+La persistenza è implementata in \texttt{src/storage.ts}. All'avvio l'app prova a caricare i dati salvati localmente. Se non sono presenti dati, vengono caricati dati dimostrativi definiti in \texttt{src/seed.ts}.
+
+Ogni modifica viene salvata in AsyncStorage serializzando l'oggetto \texttt{FitnessData} in JSON. Il file di storage contiene anche una normalizzazione dei dati, utile per mantenere compatibili dati salvati con strutture precedenti, ad esempio:
+
+\begin{itemize}
+  \item schede vecchie senza giorni;
+  \item sessioni vecchie senza giorno della scheda;
+  \item storico vecchio con carico globale;
+  \item gruppi muscolari vecchi come "Core" o "Addominali".
+  \item obiettivi scaduti non completati, che vengono normalizzati nello stato "Fallito".
+\end{itemize}
+
+
+
+\subsection{ Motivazione delle scelte effettuate}
+
+La selezione dello stack tecnologico risponde alle esigenze funzionali dell'applicazione. React Native è stato scelto per consentire lo sviluppo di un'unica base di codice eseguibile su più piattaforme, riducendo il lavoro di sviluppo e manutenzione rispetto a soluzioni native separate. Inoltre, il paradigma dichiarativo di React semplifica la realizzazione dell'interfaccia utente e la gestione dei componenti. Expo è stato adottato per semplificare la configurazione dell'ambiente di sviluppo, facilitare i test su dispositivi mobili e consentire l'esecuzione dell'app anche tramite Expo Web.
+
+Per la persistenza dei dati è stato utilizzato AsyncStorage, soluzione adeguata per un'applicazione che opera esclusivamente in locale e non richiede sincronizzazione con un backend. I dati vengono memorizzati come un unico oggetto JSON, evitando la complessità di un database relazionale e risultando sufficienti per il volume di informazioni gestito. Le relazioni tra le diverse entità sono mantenute tramite identificativi univoci e vengono ricostruite in memoria quando necessario, mentre statistiche e riepiloghi sono calcolati mediante gli hook di React. Questa scelta semplifica la gestione dei dati, riduce la complessità dell'implementazione e rende più agevoli le operazioni di migrazione e normalizzazione delle informazioni salvate.
+
+
+
+
+\section{Implementazione}
+
+\subsection{Organizzazione del codice e Architettura Software}
+
+L'architettura dell'applicazione segue un approccio centralizzato per la gestione dello stato e una separazione netta tra i componenti di logica e quelli di presentazione.
+
+Il file \texttt{App.tsx} funge da punto di ingresso (Entry Point) dell'applicazione, contenendo sia la configurazione della navigazione tramite React Navigation, sia la logica principale dell'app secondo il pattern dello \textit{State Lifting} (sollevamento dello stato).
+
+In particolare gestisce:
+
+\begin{itemize}
+  \item la persistenza e lo stato dei dati dell'app;
+  \item le statistiche calcolate in tempo reale;
+  \item lo stato globale del timer globale per i recuperi;
+  \item il collegamento rapido alla sessione d'allenamento del giorno;
+  \item le funzioni di creazione e modifica delle entità;
+  \item le operazioni di eliminazione sicura;
+  \item la duplicazione rapida di schede e sessioni;
+  \item lo stato di apertura e tracciamento dei dettagli;
+  \item i meccanismi di ripristino e reset dei dati demo.
+\end{itemize}
+
+Le schermate ricevono dati e funzioni tramite props passate dai componenti route definiti in \texttt{App.tsx}. Questa scelta rende il flusso dei dati unidirezionale ed esplicito (pattern \textit{Container-Presenter}): lo stato principale e le funzioni di mutazione risiedono in un solo file radice, mentre le schermate secondarie restano componenti puri di presentazione e interazione con l'utente.
+
+La logica di basso livello e il core applicativo sono distribuiti in file di supporto specifici:
+\begin{itemize}
+  \item \texttt{src/storage.ts} isola le chiamate asincrone a AsyncStorage e implementa gli algoritmi custom di migrazione e normalizzazione delle vecchie strutture dati;
+  \item \texttt{src/input-sanitizers.ts} ospita le espressioni regolari (Regex) e le funzioni di pulizia preventiva delle stringhe per bloccare l'inserimento di caratteri di controllo ASCII non validi.
+\end{itemize}
+
+I componenti riutilizzabili dell'interfaccia utente sono organizzati all'interno della cartella \texttt{src/components}:
+
+\begin{itemize}
+  \item \texttt{common.tsx} contiene gli elementi grafici atomici condivisi come card, pulsanti di azione, barre di ricerca, filtri ed elementi visivi per le statistiche;
+  \item \texttt{form-controls.tsx} definisce i campi di input personalizzati, i gruppi di chip e i selettori, applicando automaticamente le funzioni di sanitizzazione durante la digitazione attiva dell'utente;
+  \item \texttt{edit-modal.tsx} contiene il dispatcher leggero per l'apertura dinamica delle modali di inserimento e modifica;
+  \item \texttt{detail-modal.tsx} contiene il dispatcher analogo dedicato alle schermate di visualizzazione del dettaglio;
+  \item \texttt{src/components/modals/edit} ospita una modale di inserimento/modifica separata e specializzata per ogni singola entità dell'applicazione;
+  \item \texttt{src/components/modals/detail} contiene una modale di dettaglio separata per ogni entità, condividendo un piccolo contenitore comune strutturato per gestire gli overlay nativi, le aree di scroll e il posizionamento del pulsante di chiusura;
+  \item \texttt{goals.ts} isola il calcolo centralizzato dello stato di avanzamento e delle percentuali di completamento degli obiettivi.
+\end{itemize}
+
+Infine, tutti gli stili e le costanti grafiche sono centralizzati nel file \texttt{src/styles.ts}, garantendo una coerenza visiva rigorosa, l'applicazione di un tema scuro omogeneo e una manutenzione semplificata del layout tra le diverse sezioni.
+
+\subsection{Gestione dello stato}
+
+Lo stato è gestito con hook React: \texttt{useState}, \texttt{useEffect} e \texttt{useMemo}.
+
+Gli stati principali sono:
+
+\begin{itemize}
+  \item dati dell'app (\texttt{FitnessData});
+  \item elemento in modifica;
+  \item elemento selezionato per il dettaglio;
+  \item caricamento iniziale;
+  \item timer di recupero;
+  \item ricerca e filtro locali alle singole schermate.
+\end{itemize}
+
+\texttt{useEffect} viene usato per caricare i dati all'avvio e per gestire l'intervallo del timer. \texttt{useMemo} viene usato per calcolare statistiche derivate, come minuti totali, obiettivi raggiunti e distribuzione degli esercizi per gruppo muscolare.
+
+\subsection{Gestione della navigazione}
+La navigazione è gestita tramite React Navigation. L'app utilizza un NavigationContainer come contenitore principale, un NativeStackNavigator per la gestione della navigazione globale e un BottomTabNavigator per consentire il passaggio tra le sei sezioni principali. Questa struttura permette di mantenere separata la gestione della navigazione dalla logica applicativa e rende l'interfaccia semplice da utilizzare.
+
+\subsection{Gestione dei dati persistenti}
+
+La persistenza dei dati è gestita dal modulo \texttt{src/storage.ts}, che utilizza \texttt{AsyncStorage} per salvare e recuperare localmente tutte le informazioni dell'applicazione. Le principali operazioni sono implementate tramite due funzioni asincrone:
+
+\begin{lstlisting}
+async function loadFitnessData(): Promise<FitnessData>;
+async function saveFitnessData(data: FitnessData): Promise<void>;
+\end{lstlisting}
+
+All'avvio dell'app viene richiamata la funzione di caricamento, che tenta di recuperare i dati precedentemente salvati. Se non sono presenti informazioni persistenti, il sistema inizializza automaticamente l'app utilizzando i dati dimostrativi definiti nel file \texttt{src/seed.ts}. Ogni modifica effettuata dall'utente viene successivamente serializzata in formato JSON e salvata nuovamente in \texttt{AsyncStorage}, garantendo la conservazione dello stato dell'app tra un'esecuzione e la successiva.
+
+
+\subsection{Inserimento, modifica e cancellazione}
+
+L'inserimento e la modifica avvengono tramite modali specifiche per entità. \texttt{EditModal} riceve lo stato dell'elemento in modifica e delega a \texttt{ExerciseEditModal}, \texttt{PlanEditModal}, \texttt{SessionEditModal}, \texttt{WorkoutEditModal} o \texttt{GoalEditModal}. In questo modo ogni file contiene solo la logica del proprio form, mentre il flusso di apertura e salvataggio rimane centralizzato.
+
+La cancellazione richiede conferma. Su mobile viene usato \texttt{Alert}, mentre su web vengono usate le API native del browser tramite \texttt{globalThis.confirm}, così da mantenere lo stesso comportamento anche quando l'app viene eseguita con Expo Web.
+
+La visualizzazione dei dettagli segue la stessa organizzazione: \texttt{DetailModal} delega a una modale specifica per l'entità selezionata. Questa separazione rende il codice più leggibile e riduce il rischio che una modifica agli obiettivi interferisca con schede, esercizi o allenamenti.
+
+Il salvataggio passa dalla funzione di validazione centralizzata. Se il dato non è valido, l'app mostra un messaggio di errore e mantiene aperta la modale, permettendo all'utente di correggere l'input. Anche in questo caso il messaggio è gestito in modo compatibile con web e mobile.
+
+\subsection{Validazione e controllo degli input}
+
+Il controllo degli input opera su due livelli complementari.
+
+Il primo livello è applicato durante la digitazione ed è centralizzato in \texttt{src/input-sanitizers.ts}. Il componente riutilizzabile \texttt{Field}, definito in \texttt{src/components/form-controls.tsx}, riceve una tipologia esplicita di input e filtra immediatamente il valore prima di aggiornare lo stato. In questo modo il controllo vale anche per i dati incollati e non dipende soltanto dalla tastiera visualizzata dal dispositivo.
+
+Le tipologie gestite sono:
+
+\begin{itemize}
+  \item \texttt{integer}: accetta esclusivamente cifre; segni \texttt{+} e \texttt{-}, lettere, punti, virgole e altri simboli vengono rimossi;
+  \item \texttt{decimal}: accetta cifre e un solo separatore decimale, con massimo due cifre decimali; i segni non sono ammessi;
+  \item \texttt{date}: accetta soltanto cifre e inserisce automaticamente i trattini nel formato \texttt{YYYY-MM-DD};
+  \item \texttt{name}: accetta lettere accentate, numeri, spazi, apostrofo, trattino e slash, così da permettere nomi composti come \texttt{Push/Pull};
+  \item \texttt{list}: accetta testo controllato e virgole per separare più elementi;
+  \item \texttt{shortText}, \texttt{longText} e \texttt{search}: rimuovono caratteri invisibili, tabulazioni e simboli non pertinenti e applicano limiti di lunghezza.
+\end{itemize}
+
+Tutti i campi compilabili della modale dichiarano la propria tipologia. La barra di ricerca usa a sua volta la stessa sanitizzazione. \texttt{keyboardType} e \texttt{inputMode} migliorano l'esperienza d'uso, mentre il filtro applicato in \texttt{onChangeText} costituisce il controllo effettivo.
+
+Il secondo livello è centralizzato in \texttt{src/validation.ts} e viene eseguito al salvataggio. Sono presenti controlli per evitare:
+
+\begin{itemize}
+  \item campi obbligatori vuoti;
+  \item nomi composti solo da spazi o caratteri speciali;
+  \item duplicati su esercizi, schede, sessioni, allenamenti e obiettivi;
+  \item date inesistenti, nel formato errato o non coerenti con il contesto d'uso;
+  \item numeri negativi, decimali o fuori intervallo dove non consentiti;
+  \item serie oltre 100 e ripetizioni oltre 10.000;
+  \item durata oltre 1.440 minuti;
+  \item frequenza settimanale oltre 14 e recupero oltre 3.600 secondi;
+  \item carichi superiori a 1.000 kg o con più di due decimali;
+  \item fatica percepita diversa da un intero compreso tra 1 e 10;
+  \item target e valori attuali superiori a 1.000.000 o con più di due decimali;
+  \item schede senza giorni, giorni senza esercizi e duplicazioni interne;
+  \item riferimenti a schede, giorni o esercizi non esistenti;
+  \item scadenze degli obiettivi precedenti alla data di inizio;
+  \item testi oltre i limiti previsti.
+\end{itemize}
+
+I testi vengono inoltre normalizzati rimuovendo spazi iniziali, finali e sequenze multiple di spazi. Questa scelta evita duplicati apparenti, come "Squat" e " Squat ".
+
+\subsection{Gestione delle date}
+
+Le date sono salvate come stringhe nel formato \texttt{YYYY-MM-DD}. L'input inserisce automaticamente i trattini durante la digitazione: ad esempio \texttt{20260627} diventa \texttt{2026-06-27}.
+
+La validazione non usa conversioni UTC tramite \texttt{toISOString}, per evitare errori dovuti al fuso orario. La data viene controllata confrontando anno, mese e giorno in locale.
+
+Sono inoltre presenti vincoli specifici in base alla sezione: una sessione pianificata non può essere salvata con una data precedente al giorno corrente, mentre un allenamento registrato nello storico non può avere una data successiva al giorno corrente. In questo modo l'app distingue chiaramente tra pianificazione futura e registrazione di attività già svolte.
+
+\subsection{Riepiloghi e statistiche}
+
+La dashboard calcola e mostra:
+
+\begin{itemize}
+  \item numero totale di esercizi;
+  \item numero totale di schede;
+  \item sessioni pianificate nella settimana;
+  \item numero di allenamenti registrati;
+  \item minuti totali di allenamento;
+  \item obiettivi raggiunti rispetto al totale;
+  \item costanza settimanale basata sulle date degli allenamenti registrati;
+  \item distribuzione degli esercizi per gruppo muscolare.
+\end{itemize}
+
+Questi dati sono ricavati localmente dagli array salvati nell'app.
+
+\subsection{Aggiornamenti automatici tra entità}
+
+Alcune azioni dell'utente aggiornano più entità in modo coordinato. La registrazione di un allenamento può completare automaticamente la sessione pianificata corrispondente, quando data, scheda e giorno della scheda coincidono. Inoltre gli obiettivi automatici vengono ricalcolati partendo dagli allenamenti salvati nel periodo definito da data di inizio e scadenza.
+
+Le categorie automatiche gestite sono: numero allenamenti, minuti totali, frequenza settimanale, carico su esercizio e completamento scheda. Gli obiettivi manuali restano aggiornabili dall'utente. Gli obiettivi vengono normalizzati sia al caricamento dei dati sia durante il salvataggio: se il valore attuale raggiunge il target diventano "Raggiunto"; se la data di fine è passata e il target non è stato raggiunto diventano "Fallito". Gli obiettivi falliti o raggiunti non vengono avanzati automaticamente da nuovi allenamenti.
+
+\section{Limitazioni note}
+
+L'app non utilizza backend remoto e quindi i dati restano sul dispositivo. In caso di disinstallazione dell'app o cancellazione dei dati locali, le informazioni possono andare perse.
+
+Le statistiche sono volutamente semplici: non includono grafici avanzati sull'andamento dei carichi o analisi per periodo. Sono comunque coerenti con la richiesta di avere riepiloghi e indicatori visuali.
+
+La pianificazione delle sessioni è collegata alle schede e ai giorni della scheda. Questo rende i dati coerenti, ma limita la possibilità di creare sessioni completamente libere senza scheda associata.
+
+Gli obiettivi automatici coprono le categorie principali previste dall'app: allenamenti, minuti, frequenza, carichi su esercizio e completamento scheda. Obiettivi non riconducibili a queste categorie, ad esempio misure corporee o valutazioni personali, restano gestibili tramite categoria manuale.
+
+\section{Istruzioni per l'esecuzione}
+
+Per eseguire il progetto è necessario avere Node.js installato.
+
+Dalla cartella del progetto:
+
+\begin{lstlisting}
+cd percorso\FitTrackPro
+npm install
+npx expo start
+\end{lstlisting}
+
+L'app può essere aperta con Expo Go scansionando il QR code oppure tramite un emulatore Android/iOS configurato.
+
+Per controllare che il codice TypeScript non contenga errori:
+
+\begin{lstlisting}
+npx tsc --noEmit
+\end{lstlisting}
+
+Per controllare l'allineamento delle dipendenze Expo:
+
+\begin{lstlisting}
+npx expo install --check
+\end{lstlisting}
+
+\section{Verifiche effettuate}
+
+Durante il controllo finale sono state eseguite le seguenti verifiche:
+
+\begin{itemize}
+  \item lettura della traccia progettuale;
+  \item controllo della struttura del progetto;
+  \item controllo delle dipendenze principali;
+  \item verifica TypeScript con \texttt{npx tsc --noEmit};
+  \item verifica Expo con \texttt{npx expo install --check};
+  \item controllo dell'assenza di residui della precedente navigazione manuale;
+  \item controllo dell'assenza di riferimenti a Expo Router, non usato nella versione finale;
+  \item controllo dei campi \texttt{Field}, ciascuno con una tipologia di input esplicita;
+  \item controllo dei soli due punti di creazione diretta di \texttt{TextInput}, entrambi protetti dalla sanitizzazione.
+\end{itemize}
+
+Le verifiche TypeScript ed Expo risultano superate.
+
+\section{Conclusioni}
+
+FitTrackPro soddisfa i requisiti principali della traccia: gestisce esercizi, schede di allenamento, sessioni pianificate, storico degli allenamenti e obiettivi personali. Include ricerca, filtri, riepiloghi, persistenza locale, navigazione tra più schermate e almeno due feature avanzate integrate nel dominio dell'app.
+
+Le scelte più significative sono la navigazione con React Navigation, la gestione centrale dello stato in \texttt{App.tsx}, la modellazione delle schede in giorni di allenamento e il collegamento coerente tra schede, sessioni e storico. Il risultato è un'app usabile, organizzata e coerente con l'obiettivo di un fitness tracker personale.
+
+\end{document}

@@ -20,7 +20,7 @@ export const INPUT_LIMITS = {
 } as const;
 
 const controlCharacters = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
-const invalidNameCharacters = /[^A-Za-zÀ-ÖØ-öø-ÿ0-9 '\-]/g;
+const invalidNameCharacters = /[^A-Za-zÀ-ÖØ-öø-ÿ0-9 '\-/]/g;
 const invalidListCharacters = /[^A-Za-zÀ-ÖØ-öø-ÿ0-9 ,'\-/]/g;
 const invalidShortTextCharacters = /[^A-Za-zÀ-ÖØ-öø-ÿ0-9 .,;:'()/%+\-]/g;
 
@@ -97,7 +97,7 @@ export function sanitizeInput(value: string, kind: InputKind, maxLength: number 
 }
 
 export function inputRule(kind: InputKind) {
-  if (kind === "name") return "Lettere, numeri, spazi, apostrofo e trattino.";
+  if (kind === "name") return "Lettere, numeri, spazi, apostrofo, trattino e slash.";
   if (kind === "search") return "Ricerca testuale; caratteri invisibili e simboli non pertinenti vengono rimossi.";
   if (kind === "list") return "Lettere e numeri; separa le voci con una virgola.";
   if (kind === "shortText") return "Testo breve controllato.";
